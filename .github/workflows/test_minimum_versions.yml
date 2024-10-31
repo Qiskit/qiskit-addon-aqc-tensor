@@ -35,4 +35,4 @@ jobs:
           extremal-python-dependencies pin-dependencies-to-minimum --inplace
       - name: Test using tox environment
         run: |
-          tox -e py,notebook,doctest --parallel --parallel-no-spinner
+          tox -e py,notebook,quimb-only,aer-only --parallel --parallel-no-spinner
