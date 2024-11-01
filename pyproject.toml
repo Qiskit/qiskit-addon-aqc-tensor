@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qiskit-addon-aqc-tensor"
-version = "0.0.0"
-description = "Approximate Quantum Compiling for Quantum Simulation"
+version = "0.1.0"
+description = "Approximate quantum compilation with tensor networks"
 readme = "README.md"
 license = {file = "LICENSE.txt"}
 classifiers = [
