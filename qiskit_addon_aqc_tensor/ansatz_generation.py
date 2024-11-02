@@ -118,7 +118,9 @@ def _nonidle_qubits(qc: QuantumCircuit, /):
     }
 
 
-def generate_ansatz_from_circuit(qc: QuantumCircuit, /) -> tuple[QuantumCircuit, list[float]]:
+def generate_ansatz_from_circuit(
+    qc: QuantumCircuit, /, *, assume_initial_zero_state=False
+) -> tuple[QuantumCircuit, list[float]]:
     """Generate an ansatz from the two-qubit connectivity structure of a circuit."""
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
@@ -138,7 +140,14 @@ def generate_ansatz_from_circuit(qc: QuantumCircuit, /) -> tuple[QuantumCircuit,
         # Following the variable convention at
         # https://docs.quantum.ibm.com/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
         theta, phi, lamb = decomposer.angles(mat)
-        for j, r in zip(free_params[q], (lamb, theta, phi)):
+        fp = free_params[q]
+        values: tuple[float, ...] = lamb, theta, phi
+        if len(fp) == 2:
+            # Must be initial gate, where the Z rotation has been dropped.
+            # This makes sense if we assume the input state to this ZXZ block
+            # is |0>.
+            values = values[1:]
+        for j, r in zip(fp, values):
             initial_params[j] = r
 
     def perform_separation(q0: int, q1: int):
@@ -164,8 +173,12 @@ def generate_ansatz_from_circuit(qc: QuantumCircuit, /) -> tuple[QuantumCircuit,
 
     active_qubits = sorted([qc.find_bit(q)[0] for q in _nonidle_qubits(qc)])
     for q in active_qubits:
-        params, free_params[q] = _allocate_parameters(param_vec, 3)
-        initial_params.extend([np.nan] * 3)
+        params, free_params[q] = _allocate_parameters(
+            param_vec, 2 if assume_initial_zero_state else 3
+        )
+        initial_params.extend([np.nan] * len(params))
+        if assume_initial_zero_state:
+            params.insert(0, 0.0)
         ansatz.append(ZXZ(params), (q,))
         singles[q] = []
 
