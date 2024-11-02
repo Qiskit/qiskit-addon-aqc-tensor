@@ -20,7 +20,7 @@ from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
 from qiskit_addon_aqc_tensor.ansatz_generation import KAK
 
 
-def test_ansatz_process_fidelity_from_random_circuit():
+def test_ansatz_from_random_circuit_process_fidelity():
     qc = random_circuit(6, 4, max_operands=2)
     ansatz, initial_params = generate_ansatz_from_circuit(qc)
     ansatz.assign_parameters(initial_params, inplace=True)
@@ -28,7 +28,7 @@ def test_ansatz_process_fidelity_from_random_circuit():
     assert fidelity == pytest.approx(1)
 
 
-def test_ansatz_state_fidelity_from_random_circuit():
+def test_ansatz_from_random_circuit_state_fidelity():
     qc = random_circuit(6, 4, max_operands=2)
     ansatz, initial_params = generate_ansatz_from_circuit(qc, assume_initial_zero_state=True)
     ansatz.assign_parameters(initial_params, inplace=True)
