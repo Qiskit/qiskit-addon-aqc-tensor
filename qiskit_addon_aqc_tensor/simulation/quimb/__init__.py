@@ -19,7 +19,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -333,15 +333,13 @@ class _QuimbGradientContext:
     def __init__(self, objective, settings):
         import quimb.tensor as qtn
 
-        loss_fn = get_loss_fn(objective)
         self.quimb_ansatz, self.conversion_ctx = qiskit_ansatz_to_quimb(
             objective._ansatz, [0.0] * objective._ansatz.num_parameters
         )
         self.tnopt = qtn.TNOptimizer(
             self.quimb_ansatz,
-            loss_fn,
+            **tnoptimizer_objective_kwargs(objective),
             autodiff_backend=settings.autodiff_backend,
-            loss_kwargs={"target": objective._target_tensornetwork},
         )
 
 
@@ -371,8 +369,16 @@ def _compute_objective_and_gradient(
 
 
 @dispatch
-def get_loss_fn(_: OneMinusFidelity):
-    return oneminusfidelity_loss_fn
+def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, Any]:
+    """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
+
+    - ``loss_fn``
+    - ``loss_kwargs``
+    """
+    return {
+        "loss_fn": oneminusfidelity_loss_fn,
+        "loss_kwargs": {"target": objective.target},
+    }
 
 
 def oneminusfidelity_loss_fn(circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.Circuit):
@@ -400,7 +406,7 @@ __all__ = [
     "QuimbConversionContext",
     "qiskit_ansatz_to_quimb",
     "recover_parameters_from_quimb",
-    "get_loss_fn",
+    "tnoptimizer_objective_kwargs",
     # plum-dispatch methods
     "compute_overlap",
     "apply_circuit_to_state",
