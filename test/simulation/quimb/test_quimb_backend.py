@@ -16,10 +16,12 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import CXGate, RXGate
 
 from qiskit_addon_aqc_tensor.simulation import (
-    _apply_one_qubit_gate_inplace,
-    _apply_two_qubit_gate_inplace,
     compute_overlap,
     tensornetwork_from_circuit,
+)
+from qiskit_addon_aqc_tensor.simulation.abstract import (
+    _apply_one_qubit_gate_inplace,
+    _apply_two_qubit_gate_inplace,
 )
 from qiskit_addon_aqc_tensor.simulation.quimb import (
     QuimbSimulator,

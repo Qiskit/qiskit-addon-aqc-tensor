@@ -17,9 +17,11 @@ from qiskit.circuit.library import CXGate, XGate
 from qiskit.providers.basic_provider import BasicSimulator
 
 from qiskit_addon_aqc_tensor.simulation import (
-    _compute_overlap_with_local_gate_applied,
     compute_overlap,
     tensornetwork_from_circuit,
+)
+from qiskit_addon_aqc_tensor.simulation.abstract import (
+    _compute_overlap_with_local_gate_applied,
 )
 from qiskit_addon_aqc_tensor.simulation.aer import (
     QiskitAerSimulationSettings,
