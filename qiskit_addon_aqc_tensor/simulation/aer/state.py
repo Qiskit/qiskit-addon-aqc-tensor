@@ -97,7 +97,7 @@ def compute_overlap(mps1: QiskitAerMPS, mps2: QiskitAerMPS, /) -> complex:
 
 
 @dispatch
-def compute_overlap_with_local_gate_applied(
+def _compute_overlap_with_local_gate_applied(
     mps1: QiskitAerMPS, gate: Gate, qubit: int, mps2: QiskitAerMPS, /
 ) -> complex:
     """

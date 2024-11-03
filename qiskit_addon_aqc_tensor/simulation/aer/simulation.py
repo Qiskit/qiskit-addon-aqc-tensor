@@ -167,7 +167,7 @@ def tensornetwork_from_circuit(
 
 
 @dispatch
-def apply_one_qubit_gate_inplace(psi: QiskitAerMPS, gate: Gate, qubit: int, /) -> None:
+def _apply_one_qubit_gate_inplace(psi: QiskitAerMPS, gate: Gate, qubit: int, /) -> None:
     from qiskit_aer import AerSimulator
 
     num_qubits = len(psi.gamma)
@@ -185,7 +185,7 @@ def apply_one_qubit_gate_inplace(psi: QiskitAerMPS, gate: Gate, qubit: int, /) -
 
 
 @dispatch
-def apply_two_qubit_gate_inplace(
+def _apply_two_qubit_gate_inplace(
     psi: QiskitAerMPS,
     gate: Gate,
     q0: int,

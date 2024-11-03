@@ -46,9 +46,9 @@ from qiskit.circuit.library import XGate, YGate, ZGate
 from .abstract import (
     TensorNetworkSimulationSettings,
     TensorNetworkState,
-    apply_one_qubit_gate_inplace,
-    apply_two_qubit_gate_inplace,
-    compute_overlap_with_local_gate_applied,
+    _apply_one_qubit_gate_inplace,
+    _apply_two_qubit_gate_inplace,
+    _compute_overlap_with_local_gate_applied,
 )
 
 
@@ -245,8 +245,8 @@ def _one_qubit_const(
     # XXX: Check that this does not assume Hermitian or anything. None of the
     # _const_R[x,y,z] functions performed any complex conjugation here, so they
     # must be right.
-    apply_one_qubit_gate_inplace(w, gate, qubit)
-    apply_one_qubit_gate_inplace(z, gate, qubit)
+    _apply_one_qubit_gate_inplace(w, gate, qubit)
+    _apply_one_qubit_gate_inplace(z, gate, qubit)
 
 
 def _two_qubit_const(
@@ -261,8 +261,8 @@ def _two_qubit_const(
     gate: Gate,
     settings: TensorNetworkSimulationSettings,
 ):
-    apply_two_qubit_gate_inplace(w, gate, q0, q1, settings)
-    apply_two_qubit_gate_inplace(z, gate, q0, q1, settings)
+    _apply_two_qubit_gate_inplace(w, gate, q0, q1, settings)
+    _apply_two_qubit_gate_inplace(z, gate, q0, q1, settings)
 
 
 def _one_qubit_parametrized_pauli_rotation(
@@ -283,12 +283,12 @@ def _one_qubit_parametrized_pauli_rotation(
     if not isinstance(expr, Parameter):
         # Must be an expression
         value = expr.bind({next(iter(expr.parameters)): value}).numeric()
-    apply_one_qubit_gate_inplace(w, type(gate)(value), qubit)
-    apply_one_qubit_gate_inplace(z, type(gate)(value), qubit)
+    _apply_one_qubit_gate_inplace(w, type(gate)(value), qubit)
+    _apply_one_qubit_gate_inplace(z, type(gate)(value), qubit)
     # 0.5j * <G@w|z> where G is the Pauli corresponding to the single-qubit rotation
     # 0.5j is equal to np.conj(-0.5j)
     grad[angle_no] += (
-        0.5j * derivative * compute_overlap_with_local_gate_applied(w, pauli, qubit, z)
+        0.5j * derivative * _compute_overlap_with_local_gate_applied(w, pauli, qubit, z)
     )
 
 

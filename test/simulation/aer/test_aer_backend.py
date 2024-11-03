@@ -17,8 +17,8 @@ from qiskit.circuit.library import CXGate, XGate
 from qiskit.providers.basic_provider import BasicSimulator
 
 from qiskit_addon_aqc_tensor.simulation import (
+    _compute_overlap_with_local_gate_applied,
     compute_overlap,
-    compute_overlap_with_local_gate_applied,
     tensornetwork_from_circuit,
 )
 from qiskit_addon_aqc_tensor.simulation.aer import (
@@ -135,7 +135,7 @@ class TestQiskitAerBackend:
         bell_mps_1 = tensornetwork_from_circuit(bell_qc, settings)
         bell_mps_2 = tensornetwork_from_circuit(bell_qc, settings)
         with pytest.raises(IndexError) as e_info:
-            compute_overlap_with_local_gate_applied(bell_mps_1, XGate(), 2, bell_mps_2)
+            _compute_overlap_with_local_gate_applied(bell_mps_1, XGate(), 2, bell_mps_2)
         assert e_info.value.args[0] == "Invalid qubit index for 2 qubits: 2"
 
     def test_invalid_gate_application(self, bell_qc, AerSimulator):
@@ -144,5 +144,5 @@ class TestQiskitAerBackend:
         bell_mps_1 = tensornetwork_from_circuit(bell_qc, settings)
         bell_mps_2 = tensornetwork_from_circuit(bell_qc, settings)
         with pytest.raises(ValueError) as e_info:
-            compute_overlap_with_local_gate_applied(bell_mps_1, CXGate(), 1, bell_mps_2)
+            _compute_overlap_with_local_gate_applied(bell_mps_1, CXGate(), 1, bell_mps_2)
         assert e_info.value.args[0] == "The gate must act on a single qubit."

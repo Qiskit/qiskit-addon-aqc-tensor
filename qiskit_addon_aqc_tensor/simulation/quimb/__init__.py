@@ -116,7 +116,7 @@ def tensornetwork_from_circuit(
 
 
 @dispatch
-def compute_overlap_with_local_gate_applied(
+def _compute_overlap_with_local_gate_applied(
     circ1: CircuitMPS,
     gate: Gate,
     qubit: int,
@@ -129,7 +129,7 @@ def compute_overlap_with_local_gate_applied(
 
 
 @dispatch
-def apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) -> None:
+def _apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) -> None:
     """Apply one-qubit gate in place."""
     from qiskit_quimb.circuit import quimb_gate
 
@@ -139,7 +139,7 @@ def apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) ->
 
 
 @dispatch
-def apply_two_qubit_gate_inplace(
+def _apply_two_qubit_gate_inplace(
     circ: CircuitMPS,
     gate: Gate,
     q0: int,
@@ -401,4 +401,8 @@ __all__ = [
     "qiskit_ansatz_to_quimb",
     "recover_parameters_from_quimb",
     "get_loss_fn",
+    # plum-dispatch methods
+    "compute_overlap",
+    "apply_circuit_to_state",
+    "tensornetwork_from_circuit",
 ]

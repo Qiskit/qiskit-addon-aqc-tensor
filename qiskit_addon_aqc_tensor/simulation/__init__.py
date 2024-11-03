@@ -49,12 +49,8 @@ The following abstract methods provide a common interface that can be used with 
     :nosignatures:
 
     tensornetwork_from_circuit
-    compute_overlap
-    compute_overlap_with_local_gate_applied
-    apply_one_qubit_gate_inplace
-    apply_two_qubit_gate_inplace
     apply_circuit_to_state
-
+    compute_overlap
 """
 
 # We must import each tensor-network backend we wish to use so that their
@@ -65,10 +61,7 @@ from .abstract import (
     TensorNetworkSimulationSettings,
     TensorNetworkState,
     apply_circuit_to_state,
-    apply_one_qubit_gate_inplace,
-    apply_two_qubit_gate_inplace,
     compute_overlap,
-    compute_overlap_with_local_gate_applied,
     tensornetwork_from_circuit,
 )
 
@@ -79,9 +72,6 @@ __all__ = [
     "TensorNetworkState",
     "TensorNetworkSimulationSettings",
     "compute_overlap",
-    "compute_overlap_with_local_gate_applied",
-    "apply_one_qubit_gate_inplace",
-    "apply_two_qubit_gate_inplace",
     "apply_circuit_to_state",
     "tensornetwork_from_circuit",
 ]
