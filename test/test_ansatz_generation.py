@@ -30,7 +30,7 @@ def test_ansatz_from_random_circuit_process_fidelity():
 
 def test_ansatz_from_random_circuit_state_fidelity():
     qc = random_circuit(6, 4, max_operands=2)
-    ansatz, initial_params = generate_ansatz_from_circuit(qc, assume_initial_zero_state=True)
+    ansatz, initial_params = generate_ansatz_from_circuit(qc, qubits_initially_zero=True)
     ansatz.assign_parameters(initial_params, inplace=True)
     fidelity = state_fidelity(Statevector(ansatz), Statevector(qc))
     assert fidelity == pytest.approx(1)
