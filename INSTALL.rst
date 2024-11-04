@@ -40,12 +40,12 @@ Note: If you are using Windows, use the following commands in PowerShell:
 Option 1: Pip Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Upgrade pip and install the AQC-Tensor package.
+Upgrade pip and install the AQC-Tensor package.  To meaningfully use the package, you must also install at least one tensor network backend.  The below snippet installs the addon, along with quimb (for tensor network support) and jax (for automatic differentiation).
 
 .. code:: sh
 
     pip install --upgrade pip
-    pip install qiskit-addon-aqc-tensor
+    pip install qiskit-addon-aqc-tensor[quimb-jax]
 
 
 .. _Option 2:
@@ -76,14 +76,14 @@ Adjust the options below to suit your needs.
 
 .. code:: sh
 
-    pip install tox notebook -e '.[notebook-dependencies,dev]'
+    pip install tox jupyterlab -e '.[notebook-dependencies,dev]'
 
 If you installed the notebook dependencies, you can get started with AQC-Tensor by running the notebooks in the docs.
 
 .. code::
 
     cd docs/
-    jupyter notebook
+    jupyter lab
 
 
 .. _Platform Support:
@@ -91,4 +91,4 @@ If you installed the notebook dependencies, you can get started with AQC-Tensor 
 Platform Support
 ^^^^^^^^^^^^^^^^
 
-We expect this package to work on `any platform supported by Qiskit <https://docs.quantum.ibm.com/start/install#operating-system-support>`__.
+We expect this package to work on `any Tier 1 platform supported by Qiskit <https://docs.quantum.ibm.com/start/install#operating-system-support>`__.

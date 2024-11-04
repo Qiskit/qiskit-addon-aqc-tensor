@@ -62,19 +62,6 @@ def _validate_mps_compatibility(mps1: QiskitAerMPS, mps2: QiskitAerMPS, /) -> No
 
 @dispatch
 def compute_overlap(mps1: QiskitAerMPS, mps2: QiskitAerMPS, /) -> complex:
-    """
-    Compute dot product between MPS decompositions of two quantum states:
-    ``< mps1 | mps2 >``.
-
-    NOTE: Unlike numpy.dot, this conjugates the first argument.
-
-    Args:
-        mps1: MPS decomposition of the left state.
-        mps2: MPS decomposition of the right state.
-
-    Returns:
-        Complex dot product value.
-    """
     num_qubits = len(mps1.gamma)
     _validate_mps_compatibility(mps1, mps2)
 
@@ -97,24 +84,9 @@ def compute_overlap(mps1: QiskitAerMPS, mps2: QiskitAerMPS, /) -> complex:
 
 
 @dispatch
-def compute_overlap_with_local_gate_applied(
+def _compute_overlap_with_local_gate_applied(
     mps1: QiskitAerMPS, gate: Gate, qubit: int, mps2: QiskitAerMPS, /
 ) -> complex:
-    """
-    Computes dot product between MPS decompositions of two quantum states
-    ``< mps1 | G | mps2 >`` with a single local (1-qubit) gate in the middle.
-
-    NOTE: Unlike numpy.dot, this conjugates the first argument.
-
-    Args:
-        mps1: MPS decomposition of the left state.
-        gate: Gate to apply.
-        qubit: position of a qubit where a local gate is applied.
-        mps2: MPS decomposition of the right state.
-
-    Returns:
-        complex dot product value.
-    """
     num_qubits = len(mps1.gamma)
     _validate_mps_compatibility(mps1, mps2)
 

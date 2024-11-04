@@ -19,7 +19,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -116,7 +116,7 @@ def tensornetwork_from_circuit(
 
 
 @dispatch
-def compute_overlap_with_local_gate_applied(
+def _compute_overlap_with_local_gate_applied(
     circ1: CircuitMPS,
     gate: Gate,
     qubit: int,
@@ -129,7 +129,7 @@ def compute_overlap_with_local_gate_applied(
 
 
 @dispatch
-def apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) -> None:
+def _apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) -> None:
     """Apply one-qubit gate in place."""
     from qiskit_quimb.circuit import quimb_gate
 
@@ -139,7 +139,7 @@ def apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) ->
 
 
 @dispatch
-def apply_two_qubit_gate_inplace(
+def _apply_two_qubit_gate_inplace(
     circ: CircuitMPS,
     gate: Gate,
     q0: int,
@@ -177,7 +177,7 @@ def apply_circuit_to_state(
     return circuit
 
 
-class QuimbConversionContext:
+class QiskitQuimbConversionContext:
     """Contains information about Qiskit-to-Quimb conversion, necessary to recover Qiskit parameters."""
 
     def __init__(self, mapping: list[tuple[int, float, float]], /):
@@ -187,7 +187,7 @@ class QuimbConversionContext:
 
 def qiskit_ansatz_to_quimb(
     qc: QuantumCircuit, initial_parameters: Sequence[float], /
-) -> tuple[quimb.tensor.Circuit, QuimbConversionContext]:
+) -> tuple[quimb.tensor.Circuit, QiskitQuimbConversionContext]:
     """Convert a Qiskit ansatz to a Quimb parametrized circuit."""
     import quimb.tensor as qtn
     from qiskit_quimb.circuit import quimb_gate
@@ -265,16 +265,18 @@ def qiskit_ansatz_to_quimb(
                 "Some parameter(s) in the given Qiskit circuit remain unused. "
                 "This use case is not currently supported by the Quimb conversion code."
             )
-    return circ, QuimbConversionContext(mapping)
+    return circ, QiskitQuimbConversionContext(mapping)
 
 
-def recover_parameters_from_quimb(circ_opt: quimb.tensor.Circuit, ctx: QuimbConversionContext, /):
+def recover_parameters_from_quimb(
+    circ_opt: quimb.tensor.Circuit, ctx: QiskitQuimbConversionContext, /
+):
     """Recover Qiskit circuit parameters from a Quimb circuit."""
     quimb_parametrized_gates = [gate for gate in circ_opt.gates if gate.parametrize]
     mapping = ctx._mapping
     if len(quimb_parametrized_gates) != len(mapping):
         raise ValueError(
-            "The length of the mapping in the provided QuimbConversionContext "
+            "The length of the mapping in the provided QiskitQuimbConversionContext "
             "does not match the number of parametrized gates in the circuit "
             f"({len(mapping)}) vs. ({len(quimb_parametrized_gates)})."
         )
@@ -333,15 +335,13 @@ class _QuimbGradientContext:
     def __init__(self, objective, settings):
         import quimb.tensor as qtn
 
-        loss_fn = get_loss_fn(objective)
         self.quimb_ansatz, self.conversion_ctx = qiskit_ansatz_to_quimb(
             objective._ansatz, [0.0] * objective._ansatz.num_parameters
         )
         self.tnopt = qtn.TNOptimizer(
             self.quimb_ansatz,
-            loss_fn,
+            **tnoptimizer_objective_kwargs(objective),
             autodiff_backend=settings.autodiff_backend,
-            loss_kwargs={"target": objective._target_tensornetwork},
         )
 
 
@@ -371,11 +371,26 @@ def _compute_objective_and_gradient(
 
 
 @dispatch
-def get_loss_fn(_: OneMinusFidelity):
-    return oneminusfidelity_loss_fn
+def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, Any]:
+    """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
+
+    - ``loss_fn``
+    - ``loss_kwargs``
+    """
+    import quimb.tensor as qtn
+
+    target = objective.target
+    if isinstance(target, qtn.Circuit):
+        target = target.psi
+    return {
+        "loss_fn": oneminusfidelity_loss_fn,
+        "loss_kwargs": {"target": target},
+    }
 
 
-def oneminusfidelity_loss_fn(circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.Circuit):
+def oneminusfidelity_loss_fn(
+    circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.TensorNetworkGenVector
+):
     """Loss function for use with Quimb, compatible with automatic differentiation.
 
     See the `introduction to optimization with quimb
@@ -383,11 +398,8 @@ def oneminusfidelity_loss_fn(circ: quimb.tensor.Circuit, /, *, target: quimb.ten
     for details on using :func:`~quimb.tensor.optimize.TNOptimizer`.
     """
     import autoray as ar
-    import quimb.tensor as qtn
 
-    if not isinstance(target, qtn.Circuit):
-        raise TypeError(f"The target must be of type quimb.tensor.Circuit, not {type(circ)}.")
-    overlap = target.psi.H @ circ.psi
+    overlap = target.H @ circ.psi
     # we use `autoray.do` to allow arbitrary autodiff backends
     fidelity = ar.do("abs", overlap) ** 2
     return 1 - fidelity
@@ -397,8 +409,12 @@ __all__ = [
     "is_quimb_available",
     "QuimbCircuitFactory",
     "QuimbSimulator",
-    "QuimbConversionContext",
+    "QiskitQuimbConversionContext",
     "qiskit_ansatz_to_quimb",
     "recover_parameters_from_quimb",
-    "get_loss_fn",
+    "tnoptimizer_objective_kwargs",
+    # plum-dispatch methods
+    "compute_overlap",
+    "apply_circuit_to_state",
+    "tensornetwork_from_circuit",
 ]

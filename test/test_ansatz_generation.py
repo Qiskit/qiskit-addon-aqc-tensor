@@ -14,17 +14,25 @@ import numpy as np
 import pytest
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.random import random_circuit
-from qiskit.quantum_info import Operator, process_fidelity
+from qiskit.quantum_info import Operator, Statevector, process_fidelity, state_fidelity
 
 from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
 from qiskit_addon_aqc_tensor.ansatz_generation import KAK
 
 
-def test_ansatz_from_random_circuit():
+def test_ansatz_from_random_circuit_process_fidelity():
     qc = random_circuit(6, 4, max_operands=2)
     ansatz, initial_params = generate_ansatz_from_circuit(qc)
     ansatz.assign_parameters(initial_params, inplace=True)
     fidelity = process_fidelity(Operator(ansatz), Operator(qc))
+    assert fidelity == pytest.approx(1)
+
+
+def test_ansatz_from_random_circuit_state_fidelity():
+    qc = random_circuit(6, 4, max_operands=2)
+    ansatz, initial_params = generate_ansatz_from_circuit(qc, qubits_initially_zero=True)
+    ansatz.assign_parameters(initial_params, inplace=True)
+    fidelity = state_fidelity(Statevector(ansatz), Statevector(qc))
     assert fidelity == pytest.approx(1)
 
 

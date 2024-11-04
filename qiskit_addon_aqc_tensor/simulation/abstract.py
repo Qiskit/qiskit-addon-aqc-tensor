@@ -42,6 +42,13 @@ def compute_overlap(
 
     NOTE: Unlike ``numpy.dot``, implementations of this method will perform
     complex conjugation on the first argument.
+
+    Args:
+        psi_1: first quantum state.
+        psi_2: second quantum state.
+
+    Returns:
+        complex dot product value.
     """
     raise NotImplementedError
 
@@ -103,7 +110,7 @@ def _compute_objective_and_gradient(
 
 
 @dispatch.abstract
-def compute_overlap_with_local_gate_applied(
+def _compute_overlap_with_local_gate_applied(
     psi_1: TensorNetworkState, gate: Gate, qubit: int, psi_2: TensorNetworkState, /
 ) -> complex:  # pragma: no cover
     r"""
@@ -127,7 +134,7 @@ def compute_overlap_with_local_gate_applied(
 
 
 @dispatch.abstract
-def apply_one_qubit_gate_inplace(
+def _apply_one_qubit_gate_inplace(
     psi: TensorNetworkState, gate: Gate, qubit: int, /
 ) -> None:  # pragma: no cover
     """Apply one-qubit gate in place."""
@@ -135,7 +142,7 @@ def apply_one_qubit_gate_inplace(
 
 
 @dispatch.abstract
-def apply_two_qubit_gate_inplace(
+def _apply_two_qubit_gate_inplace(
     psi: TensorNetworkState,
     gate: Gate,
     q0: int,

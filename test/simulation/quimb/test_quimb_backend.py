@@ -16,10 +16,12 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import CXGate, RXGate
 
 from qiskit_addon_aqc_tensor.simulation import (
-    apply_one_qubit_gate_inplace,
-    apply_two_qubit_gate_inplace,
     compute_overlap,
     tensornetwork_from_circuit,
+)
+from qiskit_addon_aqc_tensor.simulation.abstract import (
+    _apply_one_qubit_gate_inplace,
+    _apply_two_qubit_gate_inplace,
 )
 from qiskit_addon_aqc_tensor.simulation.quimb import (
     QuimbSimulator,
@@ -46,8 +48,8 @@ class TestQuimbBackend:
         qc.h(0)
         qc.cx(0, 1)
         psi = tensornetwork_from_circuit(qc, settings)
-        apply_one_qubit_gate_inplace(psi, RXGate(0.2), 1)
-        apply_two_qubit_gate_inplace(psi, CXGate(), 1, 2, settings)
+        _apply_one_qubit_gate_inplace(psi, RXGate(0.2), 1)
+        _apply_two_qubit_gate_inplace(psi, CXGate(), 1, 2, settings)
 
 
 class TestQuimbConversion:
