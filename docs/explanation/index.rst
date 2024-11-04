@@ -103,7 +103,13 @@ each active qubit at the start of the circuit.
 Tensor-network simulation
 -------------------------
 
-The simplest tensor network is a matrix-product state (MPS).  Currently, AQC-Tensor supports the Qiskit Aer MPS simulator as its only backend.
+The simplest tensor network is a matrix-product state (MPS).
+
+Currently, AQC-Tensor supports the following tensor-network simulators:
+
+- Qiskit Aer's MPS simulator
+- Quimb's `eager <https://quimb.readthedocs.io/en/latest/tensor-circuit-mps.html>`__ :class:`~quimb.tensor.CircuitMPS` simulator
+- Quimb's `lazy <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__ :class:`~quimb.tensor.Circuit` simulator (may only work on small circuits so far; we're working to fix this soon with more clever contractions)
 
 The most important parameter of a tensor network is its maximum bond dimension, which limits how much entanglement it can represent (and thus to what depth a given circuit can be faithfully simulated).  The bond dimension is often represented by the Greek letter :math:`\chi`.
 
@@ -111,16 +117,26 @@ Given a general circuit on :math:`L` qubits, a matrix-product state needs at mos
 
 For this reason, if you are attempting to experiment with AQC-Tensor on a toy problem with few qubits, it is important to ensure that :math:`\chi < 2^{\lfloor L/2 \rfloor}`.  Otherwise, any circuit can be simulated to any depth, and there is no point in performing AQC.
 
-Optimization procedure
-----------------------
-
 Objective function
 ~~~~~~~~~~~~~~~~~~
 
-Currently, this addon provides one very simple objective function, :class:`.OneMinusFidelity`, which is equivalent to Eq. (7) in Ref. [1]_.  Under the hood, it calculates a gradient using the :mod:`tensor-network gradient <qiskit_addon_aqc_tensor.gradient>` functionality provided in this package.
+Currently, this addon provides one very simple objective function, :class:`.OneMinusFidelity`, which is equivalent to Eq. (7) in Ref. [1]_.  When an object of this class is called with an array of parameters, it will return both the value and the gradient of that objective function at that point in parameter space.
+
+Gradient
+~~~~~~~~
+
+The package provides a few different methods for calculating the gradient.
+
+The Aer backend always uses the explicit gradient code in the :mod:`~qiskit_addon_aqc_tensor.simulation.explicit_gradient` module.
+
+The Quimb backend will typically be used with an automatic differentiation backend; the user is to select a backend from among those supported by Quimb.  Alternatively, one can instead pass ``"explicit"`` as the ``autodiff_backend`` when instantiating the :class:`.QuimbSimulator`; in this case, the :mod:`explicit gradient module <qiskit_addon_aqc_tensor.simulation.explicit_gradient>` will be used.  It is only recommended to use explicit gradients with Quimb's eager :class:`~quimb.tensor.CircuitMPS` simulator, not the lazy :class:`~quimb.tensor.Circuit` simulator.
+
+Regardless of which backend is chosen, the gradient code can understand linear parameter expressions (`ParameterExpression` objects).  This support is essential, as linear expressions are returned by the ansatz generation code.
 
 Optimization method
 ~~~~~~~~~~~~~~~~~~~
+
+Users are encouraged to use :mod:`scipy.optimize` to perform the optimization.
 
 L-BFGS is the optimizer demonstrated in the tutorial notebook. It works well in practice because it uses the function value and its gradient to approximate the Hessian.  It works well when given an initial point and seems to work particularly well in the case of Trotter circuits.  However, it might early terminate if it starts in a barren plateau.  In that case, performing a handful of steps using the ADAM optimizer first may help.
 

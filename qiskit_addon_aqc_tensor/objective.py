@@ -40,7 +40,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class OneMinusFidelity:
     r"""Simplest possible objective function for use with AQC-Tensor.
 
-    Its value is given by Eq. (7) in `arXiv:2301.08609v6 <https://arxiv.org/abs/2301.08609v6>`__:
+    Its definition is given by Eq. (7) in `arXiv:2301.08609v6 <https://arxiv.org/abs/2301.08609v6>`__:
 
     .. math::
        C = 1 - \left| \langle 0 | V^{\dagger}(\vec\theta) | \psi_\mathrm{target} \rangle \right|^2 .

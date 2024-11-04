@@ -42,6 +42,13 @@ def compute_overlap(
 
     NOTE: Unlike ``numpy.dot``, implementations of this method will perform
     complex conjugation on the first argument.
+
+    Args:
+        psi_1: first quantum state.
+        psi_2: second quantum state.
+
+    Returns:
+        complex dot product value.
     """
     raise NotImplementedError
 

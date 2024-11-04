@@ -38,7 +38,11 @@ from qiskit.synthesis import OneQubitEulerDecomposer, TwoQubitWeylDecomposition
 
 
 class AnsatzBlock(Gate):
-    """Ansatz block."""
+    """Ansatz block.
+
+    This is the base class of all blocks returned by
+    :func:`generate_ansatz_from_circuit`.
+    """
 
     def __init__(self, params: Sequence[Parameter]):
         """Initialize the ansatz block.
@@ -122,10 +126,24 @@ def generate_ansatz_from_circuit(
     qc: QuantumCircuit,
     /,
     *,
-    qubits_initially_zero=False,
+    qubits_initially_zero: bool = False,
     parameter_name: str = "theta",
 ) -> tuple[QuantumCircuit, list[float]]:
-    """Generate an ansatz from the two-qubit connectivity structure of a circuit."""
+    """Generate an ansatz from the two-qubit connectivity structure of a circuit.
+
+    See explanatatory material for motivation.
+
+    Args:
+        qc: A circuit, which is assumed to be unitary.  Barriers are ignored.
+        qubits_initially_zero: If ``True``, the first Z rotation on each qubit
+            is removed from the ansatz under the assumption that it has no effect.
+        parameter_name: Name for the :class:`~qiskit.circuit.ParameterVector`
+            representing the free parameters in the returned ansatz circuit.
+
+    Returns:
+        2-tuple containing the ansatz circuit and a list of parameter values that,
+            when bound to the ansatz, provide a circuit equivalent to the input circuit.
+    """
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
     num_qubits = qc.num_qubits
