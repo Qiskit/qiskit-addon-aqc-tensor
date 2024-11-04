@@ -109,7 +109,7 @@ Currently, AQC-Tensor supports the following tensor-network simulators:
 
 - Qiskit Aer's MPS simulator
 - Quimb's `eager <https://quimb.readthedocs.io/en/latest/tensor-circuit-mps.html>`__ :class:`~quimb.tensor.CircuitMPS` simulator
-- Quimb's `lazy <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__ :class:`~quimb.tensor.Circuit` simulator (may only work on small circuits so far; we're working to fix this soon with more clever contractions)
+- Quimb's `lazy <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__ :class:`~quimb.tensor.Circuit` simulator (may work only on small circuits so far; we're working to fix this soon with more clever contractions)
 
 The most important parameter of a tensor network is its maximum bond dimension, which limits how much entanglement it can represent (and thus to what depth a given circuit can be faithfully simulated).  The bond dimension is often represented by the Greek letter :math:`\chi`.
 
@@ -125,7 +125,7 @@ Currently, this addon provides one very simple objective function, :class:`.OneM
 Gradient
 ~~~~~~~~
 
-The package provides a few different methods for calculating the gradient.
+This package provides a few different methods for calculating the gradient.
 
 The Aer backend always uses the explicit gradient code in the :mod:`~qiskit_addon_aqc_tensor.simulation.explicit_gradient` module.
 
