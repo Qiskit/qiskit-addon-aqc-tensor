@@ -93,6 +93,11 @@ class OneMinusFidelity:
         """Target tensor network."""
         return self._target_tensornetwork
 
+    @property
+    def ansatz(self) -> QuantumCircuit | None:
+        """Parametrized ansatz circuit."""
+        return self._ansatz
+
 
 __all__ = [
     "OneMinusFidelity",
