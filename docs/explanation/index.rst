@@ -129,7 +129,7 @@ This package provides a few different methods for calculating the gradient.
 
 The Aer backend always uses the explicit gradient code in the :mod:`~qiskit_addon_aqc_tensor.simulation.explicit_gradient` module.
 
-The Quimb backend will typically be used with an automatic differentiation backend; the user is to select a backend from among those supported by Quimb.  Alternatively, one can instead pass ``"explicit"`` as the ``autodiff_backend`` when instantiating the :class:`.QuimbSimulator`; in this case, the :mod:`explicit gradient module <qiskit_addon_aqc_tensor.simulation.explicit_gradient>` will be used.  It is only recommended to use explicit gradients with Quimb's eager :class:`~quimb.tensor.CircuitMPS` simulator, not the lazy :class:`~quimb.tensor.Circuit` simulator.
+The Quimb backend will typically be used with an automatic differentiation backend; the user is to select a backend from among those supported by Quimb.  Alternatively, one can instead pass ``"explicit"`` as the ``autodiff_backend`` when instantiating the :class:`.QuimbSimulator` object; in this case, the :mod:`~qiskit_addon_aqc_tensor.simulation.explicit_gradient` module will be used.  It is only recommended to use explicit gradients with Quimb's eager :class:`~quimb.tensor.CircuitMPS` simulator, not the lazy :class:`~quimb.tensor.Circuit` simulator.
 
 Regardless of which backend is chosen, the gradient code can understand linear parameter expressions (`ParameterExpression` objects).  This support is essential, as linear expressions are returned by the ansatz generation code.
 
