@@ -123,13 +123,14 @@ def generate_ansatz_from_circuit(
     /,
     *,
     qubits_initially_zero=False,
+    parameter_name: str = "theta",
 ) -> tuple[QuantumCircuit, list[float]]:
     """Generate an ansatz from the two-qubit connectivity structure of a circuit."""
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
     num_qubits = qc.num_qubits
     ansatz = QuantumCircuit(*qc.qregs, *qc.cregs)
-    param_vec = ParameterVector("theta")
+    param_vec = ParameterVector(parameter_name)
     initial_params: list[float] = []
 
     decomposer = OneQubitEulerDecomposer("ZXZ")
