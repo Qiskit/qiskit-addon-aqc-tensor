@@ -52,7 +52,9 @@ def test_basic_workflow(available_backend_fixture, circuit_pair):
     target_mps = tensornetwork_from_circuit(target_circuit, simulator_settings)
     good_mps = tensornetwork_from_circuit(good_circuit, simulator_settings)
     initial_fidelity = abs(compute_overlap(good_mps, target_mps)) ** 2
-    ansatz, initial_parameters = generate_ansatz_from_circuit(good_circuit)
+    ansatz, initial_parameters = generate_ansatz_from_circuit(
+        good_circuit, qubits_initially_zero=True
+    )
     objective = OneMinusFidelity(target_mps, ansatz, simulator_settings)
     result = minimize(
         objective,
