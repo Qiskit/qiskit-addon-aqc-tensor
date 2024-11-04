@@ -177,7 +177,7 @@ def apply_circuit_to_state(
     return circuit
 
 
-class QuimbConversionContext:
+class QiskitQuimbConversionContext:
     """Contains information about Qiskit-to-Quimb conversion, necessary to recover Qiskit parameters."""
 
     def __init__(self, mapping: list[tuple[int, float, float]], /):
@@ -187,7 +187,7 @@ class QuimbConversionContext:
 
 def qiskit_ansatz_to_quimb(
     qc: QuantumCircuit, initial_parameters: Sequence[float], /
-) -> tuple[quimb.tensor.Circuit, QuimbConversionContext]:
+) -> tuple[quimb.tensor.Circuit, QiskitQuimbConversionContext]:
     """Convert a Qiskit ansatz to a Quimb parametrized circuit."""
     import quimb.tensor as qtn
     from qiskit_quimb.circuit import quimb_gate
@@ -265,16 +265,18 @@ def qiskit_ansatz_to_quimb(
                 "Some parameter(s) in the given Qiskit circuit remain unused. "
                 "This use case is not currently supported by the Quimb conversion code."
             )
-    return circ, QuimbConversionContext(mapping)
+    return circ, QiskitQuimbConversionContext(mapping)
 
 
-def recover_parameters_from_quimb(circ_opt: quimb.tensor.Circuit, ctx: QuimbConversionContext, /):
+def recover_parameters_from_quimb(
+    circ_opt: quimb.tensor.Circuit, ctx: QiskitQuimbConversionContext, /
+):
     """Recover Qiskit circuit parameters from a Quimb circuit."""
     quimb_parametrized_gates = [gate for gate in circ_opt.gates if gate.parametrize]
     mapping = ctx._mapping
     if len(quimb_parametrized_gates) != len(mapping):
         raise ValueError(
-            "The length of the mapping in the provided QuimbConversionContext "
+            "The length of the mapping in the provided QiskitQuimbConversionContext "
             "does not match the number of parametrized gates in the circuit "
             f"({len(mapping)}) vs. ({len(quimb_parametrized_gates)})."
         )
@@ -403,7 +405,7 @@ __all__ = [
     "is_quimb_available",
     "QuimbCircuitFactory",
     "QuimbSimulator",
-    "QuimbConversionContext",
+    "QiskitQuimbConversionContext",
     "qiskit_ansatz_to_quimb",
     "recover_parameters_from_quimb",
     "tnoptimizer_objective_kwargs",
