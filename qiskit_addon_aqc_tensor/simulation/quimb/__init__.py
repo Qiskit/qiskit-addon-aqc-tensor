@@ -375,13 +375,20 @@ def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, An
     - ``loss_fn``
     - ``loss_kwargs``
     """
+    import quimb.tensor as qtn
+
+    target = objective.target
+    if isinstance(target, qtn.Circuit):
+        target = target.psi
     return {
         "loss_fn": oneminusfidelity_loss_fn,
-        "loss_kwargs": {"target": objective.target},
+        "loss_kwargs": {"target": target},
     }
 
 
-def oneminusfidelity_loss_fn(circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.Circuit):
+def oneminusfidelity_loss_fn(
+    circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.TensorNetworkGenVector
+):
     """Loss function for use with Quimb, compatible with automatic differentiation.
 
     See the `introduction to optimization with quimb
@@ -389,11 +396,8 @@ def oneminusfidelity_loss_fn(circ: quimb.tensor.Circuit, /, *, target: quimb.ten
     for details on using :func:`~quimb.tensor.optimize.TNOptimizer`.
     """
     import autoray as ar
-    import quimb.tensor as qtn
 
-    if not isinstance(target, qtn.Circuit):
-        raise TypeError(f"The target must be of type quimb.tensor.Circuit, not {type(circ)}.")
-    overlap = target.psi.H @ circ.psi
+    overlap = target.H @ circ.psi
     # we use `autoray.do` to allow arbitrary autodiff backends
     fidelity = ar.do("abs", overlap) ** 2
     return 1 - fidelity
