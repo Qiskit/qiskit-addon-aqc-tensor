@@ -71,6 +71,7 @@ html_theme_options = {
     "sidebar_qiskit_ecosystem_member": False,
 }
 html_static_path = ["_static"]
+html_css_files = ["css/custom.css"]
 templates_path = ["_templates"]
 
 # autodoc/autosummary options
