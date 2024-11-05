@@ -141,8 +141,8 @@ def generate_ansatz_from_circuit(
             representing the free parameters in the returned ansatz circuit.
 
     Returns:
-        2-tuple containing the ansatz circuit and a list of parameter values that,
-            when bound to the ansatz, provide a circuit equivalent to the input circuit.
+        ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
+        is equivalent to ``qc`` up to a global phase.
     """
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
