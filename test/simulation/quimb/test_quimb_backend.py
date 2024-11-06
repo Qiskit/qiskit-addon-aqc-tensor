@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 
+import numpy as np
 import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import CXGate, RXGate
@@ -27,6 +28,7 @@ from qiskit_addon_aqc_tensor.simulation.quimb import (
     QuimbSimulator,
     is_quimb_available,
     qiskit_ansatz_to_quimb,
+    recover_parameters_from_quimb,
 )
 
 skip_quimb_tests = not is_quimb_available()
@@ -57,5 +59,7 @@ class TestQuimbConversion:
         qc = QuantumCircuit(1)
         p = Parameter("x")
         qc.rx(1 - p, 0)
-        qiskit_ansatz_to_quimb(qc, [0])
-        # FIXME: finish this test
+        val = np.random.default_rng().random()
+        circ, ctx = qiskit_ansatz_to_quimb(qc, [val])
+        recovered = recover_parameters_from_quimb(circ, ctx)
+        assert recovered == pytest.approx([val])

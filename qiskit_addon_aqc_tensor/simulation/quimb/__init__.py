@@ -270,7 +270,7 @@ def qiskit_ansatz_to_quimb(
 
 def recover_parameters_from_quimb(
     circ_opt: quimb.tensor.Circuit, ctx: QiskitQuimbConversionContext, /
-):
+) -> list[float]:
     """Recover Qiskit circuit parameters from a Quimb circuit."""
     quimb_parametrized_gates = [gate for gate in circ_opt.gates if gate.parametrize]
     mapping = ctx._mapping
