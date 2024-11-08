@@ -39,12 +39,16 @@ quimb = [
     "qiskit-quimb>=0.0.4, <0.1; python_version < '3.13'",
     "networkx>=2.3; python_version < '3.13'",
 ]
+quimb-autograd = [
+    "qiskit-addon-aqc-tensor[quimb]",
+    "autograd>=1.7.0",
+]
 quimb-jax = [
     "qiskit-addon-aqc-tensor[quimb]",
     "jax>=0.4.30",
 ]
 quimb-all = [
-    "qiskit-addon-aqc-tensor[quimb-jax]",
+    "qiskit-addon-aqc-tensor[quimb-autograd,quimb-jax]",
 ]
 aer = [
     "qiskit-aer>=0.14.2",

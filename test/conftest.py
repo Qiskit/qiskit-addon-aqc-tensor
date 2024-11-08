@@ -66,6 +66,7 @@ _simulator_factories = []
 if is_quimb_available():
     _simulator_factories.append(_quimb_factory_factory("CircuitMPS", "explicit"))
     _simulator_factories.append(_quimb_factory_factory("Circuit", "jax"))
+    _simulator_factories.append(_quimb_factory_factory("Circuit", "autograd"))
 if is_aer_available():
     _simulator_factories.append(_aersimulator_factory)
     _simulator_factories.append(lambda: QiskitAerSimulationSettings(_aersimulator_factory()))
