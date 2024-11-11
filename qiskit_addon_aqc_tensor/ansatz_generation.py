@@ -11,9 +11,7 @@
 # that they have been altered from the originals.
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-"""
-Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit.
-"""
+"""Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit."""
 
 from __future__ import annotations
 

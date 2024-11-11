@@ -77,12 +77,9 @@ style = [
 ]
 lint = [
     "qiskit-addon-aqc-tensor[style]",
-    "pydocstyle==6.3.0",
     "mypy==1.13.0",
     "reno>=3.4.0",
     "pylint==3.3.1",
-    # pydocstyle prefers to parse our pyproject.toml, hence the following line
-    "toml>=0.9.6",
 ]
 docs = [
     "Sphinx>=3.0.0",
@@ -135,16 +132,20 @@ ignore = [
 extend-select = [
     "I",  # sort imports
     "CPY",  # copyright notices
+    "D", # pydocstyle
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**.py" = [
     "F405",  # star import
     "F403",  # unable to detect undefined names due to star import
+    "D",     # pydocstyle
 ]
 "docs/**" = [
     "E402",  # module level import not at top of file
     "CPY",   # copyright notices
+    "D100",  # missing docstring in public module
+    "D103",  # missing docstring in public function
 ]
 
 [tool.ruff.lint.flake8-copyright]
@@ -161,6 +162,10 @@ notice-rgx = """
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals\\.
 """
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+ignore-decorators = ["plum.dispatch"]
 
 [tool.pylint.main]
 py-version = "3.9"

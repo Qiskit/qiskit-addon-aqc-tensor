@@ -66,9 +66,9 @@ def is_quimb_available() -> bool:
 class QuimbCircuitFactory(Protocol):
     """Quimb circuit factory."""
 
-    def __call__(
+    def __call__(  # noqa: D102
         self, *, N: int, psi0: quimb.tensor.TensorNetworkGenVector | None = None
-    ) -> quimb.tensor.Circuit:  # noqa: D102; # pragma: no cover
+    ) -> quimb.tensor.Circuit:  # pragma: no cover
         ...
 
 

@@ -10,8 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-This module provides an interface to tensor-network simulation that is agnostic to which backend is used.
+"""This module provides an interface to tensor-network simulation that is agnostic to which backend is used.
 
 Currently, there is a single implementation, which uses the Qiskit Aer matrix-product state (MPS) simulator as its backend.
 """

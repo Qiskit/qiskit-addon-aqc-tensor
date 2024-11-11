@@ -12,9 +12,7 @@
 
 # pylint: disable=invalid-name
 
-"""
-Sphinx documentation builder
-"""
+"""Sphinx documentation builder."""
 
 # General options:
 import inspect

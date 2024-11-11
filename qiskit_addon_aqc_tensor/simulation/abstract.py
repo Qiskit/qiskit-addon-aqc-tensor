@@ -113,8 +113,7 @@ def _compute_objective_and_gradient(
 def _compute_overlap_with_local_gate_applied(
     psi_1: TensorNetworkState, gate: Gate, qubit: int, psi_2: TensorNetworkState, /
 ) -> complex:  # pragma: no cover
-    r"""
-    Compute overlap of two quantum states with a single local (one-qubit) gate in the middle.
+    r"""Compute overlap of two quantum states with a single local (one-qubit) gate in the middle.
 
     :math:`\langle \psi_1 | G | \psi_2 \rangle`.
 
