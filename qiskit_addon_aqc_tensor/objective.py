@@ -9,8 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""
-Code for building and evaluating objective functions used for AQC parameter optimization.
+"""Code for building and evaluating objective functions used for AQC parameter optimization.
 
 Currently, this module provides the simplest possible objective function, :class:`.OneMinusFidelity`.
 
@@ -60,8 +59,7 @@ class OneMinusFidelity:
         ansatz: QuantumCircuit,
         settings: TensorNetworkSimulationSettings,
     ):
-        """
-        Initialize the objective function.
+        """Initialize the objective function.
 
         Args:
             ansatz: Parametrized ansatz circuit.
