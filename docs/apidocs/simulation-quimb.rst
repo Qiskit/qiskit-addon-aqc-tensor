@@ -22,6 +22,3 @@ Functions
 .. autofunction:: qiskit_ansatz_to_quimb
 .. autofunction:: recover_parameters_from_quimb
 .. autofunction:: tnoptimizer_objective_kwargs
-.. autofunction:: compute_overlap
-.. autofunction:: apply_circuit_to_state
-.. autofunction:: tensornetwork_from_circuit

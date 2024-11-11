@@ -18,6 +18,3 @@ Functions
 =========
 
 .. autofunction:: is_aer_available
-.. autofunction:: compute_overlap
-.. autofunction:: apply_circuit_to_state
-.. autofunction:: tensornetwork_from_circuit
