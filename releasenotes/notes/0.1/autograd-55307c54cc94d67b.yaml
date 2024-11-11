@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    This release adds `quimb-autograd` as an optional dependency,
+    so that one can now run ``pip install 'qiskit-addon-aqc-tensor[quimb-autograd]'``
+    to install the addon along with quimb and autograd.
