@@ -1,14 +1,13 @@
-.. _aqctensor:
-
-.. module:: qiskit_addon_aqc_tensor
-
-========================
-AQC-Tensor API Reference
-========================
+=========================================
+``qiskit-addon-aqc-tensor`` API Reference
+=========================================
 
 .. toctree::
    :maxdepth: 1
 
+   qiskit-addon-aqc-tensor
    ansatz_generation
    objective
    simulation
+   simulation-aer
+   simulation-quimb

@@ -26,6 +26,7 @@ from .state import QiskitAerMPS, compute_overlap
 # import so the linter does not complain.
 _ = _preprocess_for_gradient
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "is_aer_available",
     "QiskitAerMPS",

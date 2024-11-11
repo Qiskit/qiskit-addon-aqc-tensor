@@ -9,18 +9,11 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
 """
 Code for building and evaluating objective functions used for AQC parameter optimization.
 
 Currently, this module provides the simplest possible objective function, :class:`.OneMinusFidelity`.
-
-.. currentmodule:: qiskit_addon_aqc_tensor.objective
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    OneMinusFidelity
 """
 
 from __future__ import annotations
@@ -94,6 +87,7 @@ class OneMinusFidelity:
         return self._target_tensornetwork
 
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "OneMinusFidelity",
 ]

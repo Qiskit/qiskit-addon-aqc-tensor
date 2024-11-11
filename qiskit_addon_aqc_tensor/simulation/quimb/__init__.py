@@ -405,6 +405,7 @@ def oneminusfidelity_loss_fn(
     return 1 - fidelity
 
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "is_quimb_available",
     "QuimbCircuitFactory",

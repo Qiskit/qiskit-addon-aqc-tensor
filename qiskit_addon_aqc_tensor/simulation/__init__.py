@@ -14,43 +14,6 @@
 This module provides an interface to tensor-network simulation that is agnostic to which backend is used.
 
 Currently, there is a single implementation, which uses the Qiskit Aer matrix-product state (MPS) simulator as its backend.
-
-Abstract classes
-----------------
-
-.. currentmodule:: qiskit_addon_aqc_tensor.simulation
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    TensorNetworkState
-    TensorNetworkSimulationSettings
-
-Aer backend (:mod:`qiskit_addon_aqc_tensor.simulation.aer`)
-
-.. currentmodule:: qiskit_addon_aqc_tensor.simulation.aer
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    QiskitAerMPS
-    QiskitAerSimulationSettings
-
-Methods.
-
-The following abstract methods provide a common interface that can be used with any supported backend:
-
-.. currentmodule:: qiskit_addon_aqc_tensor.simulation
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    tensornetwork_from_circuit
-    apply_circuit_to_state
-    compute_overlap
 """
 
 # We must import each tensor-network backend we wish to use so that their
@@ -68,6 +31,7 @@ from .abstract import (
 _ = aer
 __ = quimb
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "TensorNetworkState",
     "TensorNetworkSimulationSettings",

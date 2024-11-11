@@ -9,16 +9,10 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 """
 Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit.
-
-.. currentmodule:: qiskit_addon_aqc_tensor.ansatz_generation
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    generate_ansatz_from_circuit
 """
 
 from __future__ import annotations
@@ -280,6 +274,7 @@ def generate_ansatz_from_circuit(
     return ansatz, initial_params
 
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "generate_ansatz_from_circuit",
     "AnsatzBlock",
