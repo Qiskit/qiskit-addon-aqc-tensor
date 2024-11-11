@@ -9,8 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""
-Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit.
+"""Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit.
 
 .. currentmodule:: qiskit_addon_aqc_tensor.ansatz_generation
 
