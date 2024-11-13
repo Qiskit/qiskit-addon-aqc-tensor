@@ -8,5 +8,3 @@ AQC-Tensor root module (:mod:`qiskit_addon_aqc_tensor`)
    :no-special-members:
 
 .. currentmodule:: qiskit_addon_aqc_tensor
-
-.. autofunction:: generate_ansatz_from_circuit

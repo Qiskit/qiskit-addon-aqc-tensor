@@ -18,3 +18,5 @@ Ansatz generation (:mod:`qiskit_addon_aqc_tensor.ansatz_generation`)
     TwoQubitAnsatzBlock
     ZXZ
     KAK
+
+.. autofunction:: generate_ansatz_from_circuit
