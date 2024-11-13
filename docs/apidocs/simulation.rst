@@ -1,5 +1,5 @@
 #####################################################################
-Tensor Network Simulation (:mod:`qiskit_addon_aqc_tensor.simulation`)
+Tensor network simulation (:mod:`qiskit_addon_aqc_tensor.simulation`)
 #####################################################################
 
 .. automodule:: qiskit_addon_aqc_tensor.simulation
@@ -29,7 +29,7 @@ In each function below, the documentation shows every distinct implementation av
 Abstract classes
 ================
 
-These common classes are used by different backends to TODO...
+These are abstract classes, implemented by each backend.
 
 .. autoclass:: TensorNetworkState
 .. autoclass:: TensorNetworkSimulationSettings

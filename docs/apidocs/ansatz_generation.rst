@@ -1,5 +1,5 @@
 ####################################################################
-Ansatz Generation (:mod:`qiskit_addon_aqc_tensor.ansatz_generation`)
+Ansatz generation (:mod:`qiskit_addon_aqc_tensor.ansatz_generation`)
 ####################################################################
 
 .. automodule:: qiskit_addon_aqc_tensor.ansatz_generation

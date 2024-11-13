@@ -1,5 +1,5 @@
 #######################################################
-AQC Tensor root module (:mod:`qiskit_addon_aqc_tensor`)
+AQC-Tensor root module (:mod:`qiskit_addon_aqc_tensor`)
 #######################################################
 
 .. automodule:: qiskit_addon_aqc_tensor

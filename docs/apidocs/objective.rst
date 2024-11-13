@@ -1,5 +1,5 @@
 #############################################################
-Objective Function (:mod:`qiskit_addon_aqc_tensor.objective`)
+Objective function(s) (:mod:`qiskit_addon_aqc_tensor.objective`)
 #############################################################
 
 .. automodule:: qiskit_addon_aqc_tensor.objective
