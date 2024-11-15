@@ -27,7 +27,7 @@ from qiskit.circuit import Gate, Parameter, ParameterExpression, QuantumCircuit
 from wrapt import register_post_import_hook
 
 from ...ansatz_generation import AnsatzBlock
-from ...objective import OneMinusFidelity
+from ...objective import MaximizeStateFidelity
 from ..abstract import TensorNetworkSimulationSettings
 from ..explicit_gradient import (
     compute_gradient_of_tensornetwork_overlap,
@@ -309,7 +309,7 @@ class _ExplicitGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    objective: OneMinusFidelity,
+    objective: MaximizeStateFidelity,
     settings: QuimbSimulator,
     preprocess_info: _ExplicitGradientContext,
     x: np.ndarray,
@@ -347,7 +347,7 @@ class _QuimbGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    _: OneMinusFidelity,
+    _: MaximizeStateFidelity,
     __: QuimbSimulator,
     preprocess_info: _QuimbGradientContext,
     qiskit_parameter_values: np.ndarray,
@@ -371,7 +371,7 @@ def _compute_objective_and_gradient(
 
 
 @dispatch
-def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, Any]:
+def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[str, Any]:
     """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
 
     - ``loss_fn``
@@ -383,12 +383,12 @@ def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, An
     if isinstance(target, qtn.Circuit):
         target = target.psi
     return {
-        "loss_fn": oneminusfidelity_loss_fn,
+        "loss_fn": maximize_state_fidelity_loss_function,
         "loss_kwargs": {"target": target},
     }
 
 
-def oneminusfidelity_loss_fn(
+def maximize_state_fidelity_loss_function(
     circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.TensorNetworkGenVector
 ):
     """Loss function for use with Quimb, compatible with automatic differentiation.

@@ -120,7 +120,7 @@ For this reason, if you are attempting to experiment with AQC-Tensor on a toy pr
 Objective function
 ~~~~~~~~~~~~~~~~~~
 
-Currently, this addon provides one very simple objective function, :class:`.OneMinusFidelity`, which is equivalent to Eq. (7) in Ref. [1]_.  When an object of this class is called with an array of parameters, it will return both the value and the gradient of that objective function at that point in parameter space.
+Currently, this addon provides one very simple objective function, :class:`.MaximizeStateFidelity`, whose loss function is equivalent to Eq. (7) in Ref. [1]_.  When an object of this class is called with an array of parameters, it will return both the value and the gradient of that objective function at that point in parameter space.
 
 Gradient
 ~~~~~~~~

@@ -12,7 +12,7 @@
 
 """Code for building and evaluating objective functions used for AQC parameter optimization.
 
-Currently, this module provides the simplest possible objective function, :class:`.OneMinusFidelity`.
+Currently, this module provides the simplest possible objective function, :class:`.MaximizeStateFidelity`.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover
     )
 
 
-class OneMinusFidelity:
+class MaximizeStateFidelity:
     r"""Simplest possible objective function for use with AQC-Tensor.
 
     Its definition is given by Eq. (7) in `arXiv:2301.08609v6 <https://arxiv.org/abs/2301.08609v6>`__:
@@ -71,13 +71,18 @@ class OneMinusFidelity:
 
             self._preprocessed = _preprocess_for_gradient(self, settings)
 
-    def __call__(self, x: np.ndarray) -> tuple[float, np.ndarray]:
+    def loss_function(self, x: np.ndarray) -> tuple[float, np.ndarray]:
         """Evaluate ``(objective_value, gradient)`` of function at point ``x``."""
         from .simulation.abstract import _compute_objective_and_gradient
 
         return _compute_objective_and_gradient(
             self, self._simulation_settings, self._preprocessed, x
         )
+
+    # FIXME: deprecate
+    def __call__(self, x: np.ndarray) -> tuple[float, np.ndarray]:
+        """Evaluate ``(objective_value, gradient)`` of function at point ``x``."""
+        return self.loss_function(x)
 
     @property
     def target(self) -> TensorNetworkState:
@@ -87,5 +92,5 @@ class OneMinusFidelity:
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
-    "OneMinusFidelity",
+    "MaximizeStateFidelity",
 ]
