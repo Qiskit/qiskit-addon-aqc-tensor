@@ -131,7 +131,7 @@ def _compute_overlap_with_local_gate_applied(
 @dispatch
 def _apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) -> None:
     """Apply one-qubit gate in place."""
-    from qiskit_quimb.circuit import quimb_gate
+    from qiskit_quimb import quimb_gate
 
     quimb_gate_ = quimb_gate(gate, (qubit,))
     if quimb_gate_ is not None:
@@ -148,7 +148,7 @@ def _apply_two_qubit_gate_inplace(
     /,
 ) -> None:
     """Apply two-qubit gate in place."""
-    from qiskit_quimb.circuit import quimb_gate
+    from qiskit_quimb import quimb_gate
 
     quimb_gate_ = quimb_gate(gate, (q0, q1))
     if quimb_gate_ is not None:
@@ -190,7 +190,7 @@ def qiskit_ansatz_to_quimb(
 ) -> tuple[quimb.tensor.Circuit, QiskitQuimbConversionContext]:
     """Convert a Qiskit ansatz to a Quimb parametrized circuit."""
     import quimb.tensor as qtn
-    from qiskit_quimb.circuit import quimb_gate
+    from qiskit_quimb import quimb_gate
 
     qc = qc.decompose(AnsatzBlock)
     if len(initial_parameters) != qc.num_parameters:
