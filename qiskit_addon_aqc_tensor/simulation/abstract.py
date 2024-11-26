@@ -91,14 +91,16 @@ def apply_circuit_to_state(
 
 
 @dispatch.abstract
-def _preprocess_for_gradient(objective, settings: TensorNetworkSimulationSettings):
+def _preprocess_for_gradient(
+    objective, settings: TensorNetworkSimulationSettings
+):  # pragma: no cover
     raise NotImplementedError
 
 
 @dispatch.abstract
 def _compute_objective_and_gradient(
     objective, settings: TensorNetworkSimulationSettings, preprocess_info, x: np.ndarray
-) -> tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:  # pragma: no cover
     raise NotImplementedError
 
 

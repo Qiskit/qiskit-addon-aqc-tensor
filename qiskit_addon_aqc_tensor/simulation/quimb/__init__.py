@@ -195,8 +195,8 @@ def qiskit_ansatz_to_quimb(
     qc = qc.decompose(AnsatzBlock)
     if len(initial_parameters) != qc.num_parameters:
         raise ValueError(
-            f"{len(initial_parameters)} parameters were passed, but "
-            f"the circuit has {qc.num_parameters} parameters."
+            f"{len(initial_parameters)} parameter(s) were passed, but "
+            f"the circuit has {qc.num_parameters} parameter(s)."
         )
     circ = qtn.Circuit(qc.num_qubits)
     mapping: list[tuple[int, float, float]] = [(-1, 0.0, 0.0)] * qc.num_parameters
@@ -227,7 +227,7 @@ def qiskit_ansatz_to_quimb(
             if isinstance(m, ParameterExpression):
                 raise ValueError(
                     "The Quimb backend currently requires that each ParameterExpression "
-                    f"must be in the form mx + b (not {m}).  Otherwise, the backend is unable "
+                    f"must be in the form mx + b (not {expr}).  Otherwise, the backend is unable "
                     "to recover the parameter."
                 )
             b = expr.bind({param: 0}).numeric()
@@ -235,7 +235,7 @@ def qiskit_ansatz_to_quimb(
             fixed_op = deepcopy(op)
             try:
                 index = parameter_lookup[param]
-            except KeyError as ex:
+            except KeyError as ex:  # pragma: no cover
                 raise RuntimeError(
                     "Unexpected error: Parameter of operation is not listed "
                     "among the circuit's parameters."
