@@ -86,5 +86,5 @@ class TestAnsatzGeneration:
     def test_idle_qubit(self):
         qc = QuantumCircuit(2)
         qc.x(0)
-        ansatz, initial_parameters = generate_ansatz_from_circuit(qc)
+        _, initial_parameters = generate_ansatz_from_circuit(qc)
         assert len(initial_parameters) == 3
