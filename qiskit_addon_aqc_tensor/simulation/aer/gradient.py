@@ -20,7 +20,7 @@ from qiskit.circuit import (
     QuantumCircuit,
 )
 
-from ...objective import OneMinusFidelity
+from ...objective import MaximizeStateFidelity
 from ..abstract import (
     apply_circuit_to_state,
     compute_overlap,
@@ -44,7 +44,7 @@ def _preprocess_for_gradient(objective, settings: Union[QiskitAerSimulationSetti
 
 @dispatch
 def _compute_objective_and_gradient(
-    objective: OneMinusFidelity,
+    objective: MaximizeStateFidelity,
     settings: Union[QiskitAerSimulationSettings, AerSimulator],
     preprocess_info,
     x: np.ndarray,
