@@ -85,7 +85,45 @@ class OneMinusFidelity:
         return self._target_tensornetwork
 
 
+class MaximizeProcessFidelity:
+    """Maximize process fidelity."""
+
+    def __init__(self, target, ansatz: QuantumCircuit, settings: TensorNetworkSimulationSettings):
+        """Initialize the objective function.
+
+        Args:
+            ansatz: Parametrized ansatz circuit.
+            target: Target state in tensor-network representation.
+            settings: Tensor network simulation settings.
+        """
+        if ansatz is not None:
+            from .ansatz_generation import AnsatzBlock
+
+            ansatz = ansatz.decompose(AnsatzBlock)
+        self._ansatz = ansatz
+        self._simulation_settings = settings
+        self._target_tensornetwork = target
+        if settings is not None:
+            from .simulation.abstract import _preprocess_for_gradient
+
+            self._preprocessed = _preprocess_for_gradient(self, settings)
+
+    def loss_function(self, x: np.ndarray) -> tuple[float, np.ndarray]:
+        """Evaluate ``(objective_value, gradient)`` of function at point ``x``."""
+        from .simulation.abstract import _compute_objective_and_gradient
+
+        return _compute_objective_and_gradient(
+            self, self._simulation_settings, self._preprocessed, x
+        )
+
+    @property
+    def target(self) -> TensorNetworkState:
+        """Target tensor network."""
+        return self._target_tensornetwork
+
+
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "OneMinusFidelity",
+    "MaximizeProcessFidelity",
 ]
