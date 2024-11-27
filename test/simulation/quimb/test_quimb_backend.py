@@ -110,7 +110,7 @@ class TestQuimbConversion:
         qc.rx(x, 0)
         qc.ry(x, 0)
         with pytest.raises(ValueError) as e_info:
-            qiskit_ansatz_to_quimb(qc, [np.pi / 2, np.pi / 4])
+            qiskit_ansatz_to_quimb(qc, [np.pi / 2])
         assert (
             e_info.value.args[0]
             == "Parameter cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
