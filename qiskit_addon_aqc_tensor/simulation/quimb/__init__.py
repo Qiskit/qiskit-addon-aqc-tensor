@@ -90,7 +90,9 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
     #: Whether to display a progress bar while applying gates.
     progbar: bool = False
 
-    def _construct_circuit(self, qc: QuantumCircuit, /, **kwargs):
+    def _construct_circuit(
+        self, qc: QuantumCircuit, /, *, out_state: np.ndarray | None = None, **kwargs
+    ):
         import qiskit_quimb
 
         qc = qc.decompose(AnsatzBlock)
@@ -98,6 +100,8 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
         circ = quimb_circuit_factory(N=qc.num_qubits, **kwargs)
         gates = qiskit_quimb.quimb_gates(qc)
         circ.apply_gates(gates, progbar=self.progbar)
+        if out_state is not None:
+            out_state[:] = np.squeeze(circ.psi.to_dense())
         return circ
 
 
@@ -111,8 +115,10 @@ def tensornetwork_from_circuit(
     qc: QuantumCircuit,
     settings: QuimbSimulator,
     /,
+    *,
+    out_state: Optional[np.ndarray] = None,
 ) -> quimb.tensor.Circuit:
-    return settings._construct_circuit(qc)
+    return settings._construct_circuit(qc, out_state=out_state)
 
 
 @dispatch
@@ -171,10 +177,7 @@ def apply_circuit_to_state(
     Returns:
         The new state.
     """
-    circuit = settings._construct_circuit(qc, psi0=circ0.psi)
-    if out_state is not None:
-        out_state[:] = circuit.psi.to_dense()
-    return circuit
+    return settings._construct_circuit(qc, out_state=out_state, psi0=circ0.psi)
 
 
 class QiskitQuimbConversionContext:
@@ -257,10 +260,18 @@ def qiskit_ansatz_to_quimb(
             quimb_gate_ = quimb_gate(op, qubits)
             if quimb_gate_ is not None:
                 circ.apply_gate(quimb_gate_)
-        else:
+        else:  # pragma: no cover
             raise ValueError("A parameter in the circuit has an unexpected type.")
     for j, _, _ in mapping:
-        if j == -1:
+        if j == -1:  # pragma: no cover
+            # NOTE: There seems to be no obvious way to trigger this error.
+            # Even the following snippet results in the parameter being removed
+            # from the circuit.
+            #
+            # qc = QuantumCircuit(1)
+            # x = Parameter("x")
+            # qc.rx(x, 0)
+            # qc.data[0] = CircuitInstruction(RXGate(np.pi / 3), qubits=[0])
             raise ValueError(
                 "Some parameter(s) in the given Qiskit circuit remain unused. "
                 "This use case is not currently supported by the Quimb conversion code."
@@ -278,7 +289,7 @@ def recover_parameters_from_quimb(
         raise ValueError(
             "The length of the mapping in the provided QiskitQuimbConversionContext "
             "does not match the number of parametrized gates in the circuit "
-            f"({len(mapping)}) vs. ({len(quimb_parametrized_gates)})."
+            f"({len(mapping)} vs. {len(quimb_parametrized_gates)})."
         )
     # `(y - b) / m` is the inversion of the parameter expression, which we
     # assumed above to be in the form mx + b.

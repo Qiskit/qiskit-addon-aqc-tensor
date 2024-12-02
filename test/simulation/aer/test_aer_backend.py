@@ -12,7 +12,6 @@
 
 import numpy as np
 import pytest
-from qiskit import QuantumCircuit
 from qiskit.circuit.library import CXGate, XGate
 from qiskit.providers.basic_provider import BasicSimulator
 
@@ -30,23 +29,6 @@ from qiskit_addon_aqc_tensor.simulation.aer import (
 
 skip_aer_tests = not is_aer_available()
 pytestmark = pytest.mark.skipif(skip_aer_tests, reason="qiskit-aer is not installed")
-
-
-@pytest.fixture
-def bell_qc():
-    qc = QuantumCircuit(2)
-    qc.h(0)
-    qc.cx(0, 1)
-    return qc
-
-
-@pytest.fixture
-def ghz_qc():
-    qc = QuantumCircuit(3)
-    qc.h(0)
-    qc.cx(0, 1)
-    qc.cx(1, 2)
-    return qc
 
 
 class TestQiskitAerBackend:
