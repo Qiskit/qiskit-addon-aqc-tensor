@@ -12,6 +12,7 @@
 
 """Quimb as a tensor network backend."""
 
+# ruff: noqa: F811
 from __future__ import annotations
 
 import logging
@@ -27,7 +28,7 @@ from qiskit.circuit import Gate, Parameter, ParameterExpression, QuantumCircuit
 from wrapt import register_post_import_hook
 
 from ...ansatz_generation import AnsatzBlock
-from ...objective import OneMinusFidelity
+from ...objective import MaximizeProcessFidelity, OneMinusFidelity
 from ..abstract import TensorNetworkSimulationSettings
 from ..explicit_gradient import (
     compute_gradient_of_tensornetwork_overlap,
@@ -403,6 +404,39 @@ def oneminusfidelity_loss_fn(
     # we use `autoray.do` to allow arbitrary autodiff backends
     fidelity = ar.do("abs", overlap) ** 2
     return 1 - fidelity
+
+
+@dispatch
+def tnoptimizer_objective_kwargs(objective: MaximizeProcessFidelity, /) -> dict[str, Any]:
+    """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
+
+    - ``loss_fn``
+    - ``loss_kwargs``
+    """
+    import quimb.tensor as qtn
+
+    target = objective.target
+    if isinstance(target, qtn.Circuit):
+        target = target.psi
+    return {
+        "loss_fn": maximizeprocessfidelity_loss_fn,
+        "loss_kwargs": {"target": target},
+    }
+
+
+def maximizeprocessfidelity_loss_fn(
+    circ: quimb.tensor.Circuit,
+    /,
+    *,
+    target: quimb.tensor.TensorNetworkGenVector,
+    optimize="auto-hq",
+):
+    import autoray as ar
+
+    return (
+        1
+        - ar.do("abs", (circ.uni.H & target).contract(all, optimize=optimize)) / 2.0**target.nsites
+    )
 
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
