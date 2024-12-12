@@ -27,7 +27,7 @@ def test_star_imports():
     assert generate_ansatz_from_circuit.__name__ == "generate_ansatz_from_circuit"
     assert KAK.__name__ == "KAK"
     assert preprocess_circuit_for_backtracking.__name__ == "preprocess_circuit_for_backtracking"
-    assert OneMinusFidelity.__name__ == "OneMinusFidelity"
+    assert MaximizeStateFidelity.__name__ == "MaximizeStateFidelity"
     assert TensorNetworkState.__name__ == "TensorNetworkState"
     assert QiskitAerMPS.__name__ == "QiskitAerMPS"
     assert QuimbSimulator.__name__ == "QuimbSimulator"
