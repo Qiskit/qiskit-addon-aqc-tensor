@@ -112,7 +112,7 @@ def preprocess_circuit_for_backtracking(
         except KeyError as ex:
             raise ValueError(
                 f"Expects a gate from the list of basis ones: "
-                f"'{_basis_gates()}', got '{operation.name}' instead."
+                f"{sorted(_basis_gates())}, got '{operation.name}' instead."
             ) from ex
         action = action_generator(pname2index, operation, qubit_indices, settings)
         if action is not None:
