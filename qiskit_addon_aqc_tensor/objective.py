@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
+from qiskit.utils.deprecation import deprecate_func
 
 if TYPE_CHECKING:  # pragma: no cover
     from .simulation.abstract import (
@@ -39,7 +40,7 @@ class MaximizeStateFidelity:
 
     Minimizing this function is equivalent to maximizing the pure-state fidelity
     between the state prepared by the ansatz circuit at the current parameter
-    point,(:math:`V(\vec\theta) |0\rangle`, and the target state,
+    point, :math:`V(\vec\theta) |0\rangle`, and the target state,
     :math:`| \psi_\mathrm{target} \rangle`.
 
     When called with an :class:`~numpy.ndarray` of parameters, this object will return
@@ -71,6 +72,23 @@ class MaximizeStateFidelity:
 
             self._preprocessed = _preprocess_for_gradient(self, settings)
 
+    @deprecate_func(
+        since="0.2.0",
+        package_name="qiskit-addon-aqc-tensor",
+        removal_timeline="no earlier than v0.4.0",
+        additional_msg=(
+            "Going forward, the ``loss_function`` method should be called "
+            "instead of calling the instance directly."
+        ),
+    )
+    def __call__(self, x: np.ndarray) -> tuple[float, np.ndarray]:
+        """Evaluate ``(objective_value, gradient)`` of function at point ``x``.
+
+        This method is DEPRECATED since v0.2.  The
+        :meth:`~.MaximizeStateFidelity.loss_function` method should be called instead.
+        """
+        return self.loss_function(x)
+
     def loss_function(self, x: np.ndarray) -> tuple[float, np.ndarray]:
         """Evaluate ``(objective_value, gradient)`` of function at point ``x``."""
         from .simulation.abstract import _compute_objective_and_gradient
@@ -79,18 +97,42 @@ class MaximizeStateFidelity:
             self, self._simulation_settings, self._preprocessed, x
         )
 
-    # FIXME: deprecate
-    def __call__(self, x: np.ndarray) -> tuple[float, np.ndarray]:
-        """Evaluate ``(objective_value, gradient)`` of function at point ``x``."""
-        return self.loss_function(x)
-
     @property
     def target(self) -> TensorNetworkState:
         """Target tensor network."""
         return self._target_tensornetwork
 
 
+class OneMinusFidelity(MaximizeStateFidelity):
+    """DEPRECATED objective function, equivalent to :class:`.MaximizeStateFidelity`."""
+
+    @deprecate_func(
+        since="0.2.0",
+        package_name="qiskit-addon-aqc-tensor",
+        removal_timeline="no earlier than v0.4.0",
+        additional_msg="This class has been renamed to ``MaximizeStateFidelity``.",
+    )
+    def __init__(
+        self,
+        target: TensorNetworkState,
+        ansatz: QuantumCircuit,
+        settings: TensorNetworkSimulationSettings,
+    ):
+        """Initialize the objective function.
+
+        The :class:`.OneMinusFidelity` class is DEPRECATED since v0.2.
+        Please migrate to :class:`.MaximizeStateFidelity` as soon as possible.
+
+        Args:
+            ansatz: Parametrized ansatz circuit.
+            target: Target state in tensor-network representation.
+            settings: Tensor network simulation settings.
+        """
+        super().__init__(target, ansatz, settings)
+
+
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "MaximizeStateFidelity",
+    "OneMinusFidelity",
 ]
