@@ -27,7 +27,10 @@ Additionally, all below tests should be excluded from coverage calculations.
 
 import pytest
 
+from qiskit_addon_aqc_tensor.simulation.aer import is_aer_available
 
+
+@pytest.mark.skipif(not is_aer_available(), reason="qiskit-aer is not installed")
 @pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.skipforcoverage
