@@ -123,18 +123,92 @@ def generate_ansatz_from_circuit(
 ) -> tuple[QuantumCircuit, list[float]]:
     """Generate an ansatz from the two-qubit connectivity structure of a circuit.
 
-    See explanatatory material for motivation.
+    See the `explanatatory material
+    <https://qiskit.github.io/qiskit-addon-aqc-tensor/explanation/index.html#ansatz-generation-motivation>`__
+    for motivation.
 
     Args:
         qc: A circuit, which is assumed to be unitary.  Barriers are ignored.
         qubits_initially_zero: If ``True``, the first Z rotation on each qubit
-            is removed from the ansatz under the assumption that it has no effect.
+            is fixed to zero because such a rotation has no effect on the state
+            :math:`|0\\rangle`.
         parameter_name: Name for the :class:`~qiskit.circuit.ParameterVector`
             representing the free parameters in the returned ansatz circuit.
 
     Returns:
         ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
         is equivalent to ``qc`` up to a global phase.
+
+    Examples
+    --------
+
+    Consider the following circuit that prepares a 4-qubit GHZ state.
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: reset
+
+       from qiskit import QuantumCircuit
+
+       qc = QuantumCircuit(4)
+       qc.h(0)
+       for i in range(qc.num_qubits - 1):
+           qc.cx(i, i + 1)
+       qc.draw("mpl")
+
+    If the above circuit is passed to :func:`.generate_ansatz_from_circuit`, it will return an ansatz with parametrized two-qubit KAK rotations in the same locations:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
+
+       ansatz, initial_params = generate_ansatz_from_circuit(qc, qubits_initially_zero=True, parameter_name="x")
+       ansatz.draw("mpl")
+
+
+    Further, the :func:`.generate_ansatz_from_circuit` will provide parameters which, when bound to the ansatz, will result in an equivalent circuit to the original one, up to a global phase:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       ansatz.assign_parameters(initial_params).draw("mpl")
+
+    Another example input follows:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: reset
+
+       from qiskit import QuantumCircuit
+
+       qc = QuantumCircuit(6)
+       qc.ryy(0.2, 2, 3)
+       qc.h(2)
+       qc.rz(0.1, 2)
+       qc.rxx(0.3, 0, 1)
+       qc.rzz(0.3, 0, 1)
+       qc.cx(2, 1)
+       qc.h(4)
+       qc.draw("mpl")
+
+    Note that in the generated ansatz, all consecutive single-qubit gates are collapsed into the same ZXZ block, and all consecutive two-qubit gates are collapsed into a single KAK block:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
+
+       ansatz, initial_params = generate_ansatz_from_circuit(qc, qubits_initially_zero=True)
+       ansatz.draw("mpl")
     """
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
