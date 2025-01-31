@@ -139,8 +139,9 @@ def generate_ansatz_from_circuit(
         ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
         is equivalent to ``qc`` up to a global phase.
 
-    Example:
+    Example
     -------
+
     Consider the following circuit as an example:
 
     .. plot::
