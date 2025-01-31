@@ -121,7 +121,7 @@ def generate_ansatz_from_circuit(
     qubits_initially_zero: bool = False,
     parameter_name: str = "theta",
 ) -> tuple[QuantumCircuit, list[float]]:
-    """Generate an ansatz from the two-qubit connectivity structure of a circuit.
+    r"""Generate an ansatz from the two-qubit connectivity structure of a circuit.
 
     See the `explanatatory material
     <https://qiskit.github.io/qiskit-addon-aqc-tensor/explanation/index.html#ansatz-generation-motivation>`__
@@ -131,7 +131,7 @@ def generate_ansatz_from_circuit(
         qc: A circuit, which is assumed to be unitary.  Barriers are ignored.
         qubits_initially_zero: If ``True``, the first Z rotation on each qubit
             is fixed to zero because such a rotation has no effect on the state
-            :math:`|0\\rangle`.
+            :math:`|0\rangle`.
         parameter_name: Name for the :class:`~qiskit.circuit.ParameterVector`
             representing the free parameters in the returned ansatz circuit.
 
@@ -139,9 +139,8 @@ def generate_ansatz_from_circuit(
         ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
         is equivalent to ``qc`` up to a global phase.
 
-    Example
+    Example:
     -------
-
     Consider the following circuit as an example:
 
     .. plot::
