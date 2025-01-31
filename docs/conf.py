@@ -105,7 +105,7 @@ plot_formats = ["svg"]
 # ----------------------------------------------------------------------------------
 
 _inlined_apis = [
-    ("qiskit_addon_aqc_tensor.objective", "OneMinusFidelity"),
+    ("qiskit_addon_aqc_tensor.objective", "MaximizeStateFidelity"),
     ("qiskit_addon_aqc_tensor.simulation", "TensorNetworkState"),
     ("qiskit_addon_aqc_tensor.simulation", "TensorNetworkSimulationSettings"),
     ("qiskit_addon_aqc_tensor.simulation", "tensornetwork_from_circuit"),
