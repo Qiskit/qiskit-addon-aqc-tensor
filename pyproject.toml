@@ -170,6 +170,9 @@ ignore-decorators = ["plum.dispatch"]
 
 [tool.pylint.main]
 py-version = "3.9"
+load-plugins = [
+    "pylint.extensions.no_self_use",
+]
 disable = "all"
 enable = [
     "reimported",
