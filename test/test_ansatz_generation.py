@@ -19,6 +19,8 @@ from qiskit.quantum_info import Operator, Statevector, process_fidelity, state_f
 from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
 from qiskit_addon_aqc_tensor.ansatz_generation import KAK
 
+# pylint: disable=no-self-use
+
 
 class TestAnsatzGeneration:
     def test_ansatz_from_random_circuit_process_fidelity(self):
