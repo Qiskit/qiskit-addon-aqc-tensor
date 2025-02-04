@@ -51,7 +51,7 @@ def is_aer_available() -> bool:
     """Return ``True`` is qiskit-aer is installed, ``False`` otherwise."""
     try:
         metadata_version("qiskit-aer")
-    except PackageNotFoundError:
+    except PackageNotFoundError:  # pragma: no cover
         return False
     return True
 

@@ -69,6 +69,7 @@ html_theme_options = {
     "sidebar_qiskit_ecosystem_member": False,
 }
 html_static_path = ["_static"]
+html_css_files = ["css/custom.css"]
 templates_path = ["_templates"]
 
 # Options for autodoc. These reflect the values from Qiskit SDK and Runtime.
@@ -104,7 +105,7 @@ plot_formats = ["svg"]
 # ----------------------------------------------------------------------------------
 
 _inlined_apis = [
-    ("qiskit_addon_aqc_tensor.objective", "OneMinusFidelity"),
+    ("qiskit_addon_aqc_tensor.objective", "MaximizeStateFidelity"),
     ("qiskit_addon_aqc_tensor.simulation", "TensorNetworkState"),
     ("qiskit_addon_aqc_tensor.simulation", "TensorNetworkSimulationSettings"),
     ("qiskit_addon_aqc_tensor.simulation", "tensornetwork_from_circuit"),

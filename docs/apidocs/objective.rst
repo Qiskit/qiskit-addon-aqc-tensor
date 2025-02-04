@@ -9,5 +9,6 @@ Objective function(s) (:mod:`qiskit_addon_aqc_tensor.objective`)
 
 .. currentmodule:: qiskit_addon_aqc_tensor.objective
 
+.. autoclass:: MaximizeStateFidelity
 .. autoclass:: OneMinusFidelity
    :special-members: __call__

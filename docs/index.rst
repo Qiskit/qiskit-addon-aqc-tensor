@@ -17,6 +17,21 @@ It has been tested primarily on Trotter circuits to date.  It may, however, be a
 
 (Figure is taken from `arXiv:2301.08609 <https://arxiv.org/abs/2301.08609>`__.)
 
+Developer guide
+---------------
+
+The source code to this package is available `on GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>`__.
+
+The developer guide is located at `CONTRIBUTING.md <https://github.com/Qiskit/qiskit-addon-aqc-tensor/blob/main/CONTRIBUTING.md>`__ in the root of this project's repository.
+
+Citing this project
+-------------------
+
+If you use this package in your research, please cite the reference(s) provided in the ``CITATON.bib`` file in this project's repository:
+
+.. literalinclude:: ../CITATION.bib
+   :language: bibtex
+
 Contents
 --------
 .. toctree::
@@ -28,4 +43,5 @@ Contents
    Explanatory Material <explanation/index>
    API Reference <apidocs/index>
    How-To Guides <how-tos/index>
+   GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
    Release Notes <release-notes>
