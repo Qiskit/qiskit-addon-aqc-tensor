@@ -43,4 +43,5 @@ Contents
    Explanatory Material <explanation/index>
    API Reference <apidocs/index>
    How-To Guides <how-tos/index>
+   GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
    Release Notes <release-notes>
