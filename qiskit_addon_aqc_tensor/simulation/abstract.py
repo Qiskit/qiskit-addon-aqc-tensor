@@ -20,6 +20,12 @@ import numpy as np
 from plum import dispatch
 from qiskit.circuit import Gate, QuantumCircuit
 
+# NOTE: This file contains abstract classes and functions.  The functions in
+# this file are implemented differently for each tensor-network backend, and
+# the backend method is chosen dynamically based on the type(s) passed to the
+# function.  Dispatch is powered by plum-dispatch, a multiple dispatch library
+# for Python.
+
 
 class TensorNetworkState:
     """Abstract tensor network state."""
