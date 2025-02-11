@@ -20,7 +20,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence, Union
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -348,7 +348,7 @@ class _QuimbGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    _: MaximizeStateFidelity,
+    _: Union[MaximizeStateFidelity,MaximizeProcessFidelity],
     __: QuimbSimulator,
     preprocess_info: _QuimbGradientContext,
     qiskit_parameter_values: np.ndarray,
@@ -385,7 +385,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
         target = target.psi
     return {
         "loss_fn": maximize_state_fidelity_loss_function,
-        "loss_kwargs": {"target": target},
+        "loss_constants": {"target": target},
     }
 
 
@@ -417,14 +417,14 @@ def tnoptimizer_objective_kwargs(objective: MaximizeProcessFidelity, /) -> dict[
 
     target = objective.target
     if isinstance(target, qtn.Circuit):
-        target = target.psi
+        target = target.get_uni()
     return {
-        "loss_fn": maximizeprocessfidelity_loss_fn,
-        "loss_kwargs": {"target": target},
+        "loss_fn": maximize_process_fidelity_loss_fn,
+        "loss_constants": {"target": target},
     }
 
 
-def maximizeprocessfidelity_loss_fn(
+def maximize_process_fidelity_loss_fn(
     circ: quimb.tensor.Circuit,
     /,
     *,
@@ -435,7 +435,7 @@ def maximizeprocessfidelity_loss_fn(
 
     return (
         1
-        - ar.do("abs", (circ.uni.H & target).contract(all, optimize=optimize)) / 2.0**target.nsites
+        - ar.do("abs", (circ.get_uni().H & target).contract(all, optimize=optimize)) / 2.0**target.nsites
     )
 
 
