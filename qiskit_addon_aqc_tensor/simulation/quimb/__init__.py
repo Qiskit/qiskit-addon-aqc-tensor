@@ -348,7 +348,7 @@ class _QuimbGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    _: Union[MaximizeStateFidelity,MaximizeProcessFidelity],
+    _: Union[MaximizeStateFidelity, MaximizeProcessFidelity],
     __: QuimbSimulator,
     preprocess_info: _QuimbGradientContext,
     qiskit_parameter_values: np.ndarray,
@@ -433,10 +433,11 @@ def maximize_process_fidelity_loss_fn(
 ):
     import autoray as ar
 
-    return (
-        1
-        - ar.do("abs", (circ.get_uni().H & target).contract(all, optimize=optimize)) / 2.0**target.nsites
+    hilbert_schmidt_inner_product = (
+        ar.do("abs", (circ.get_uni().H & target).contract(all, optimize=optimize))
+        / 2.0**target.nsites
     )
+    return 1 - hilbert_schmidt_inner_product
 
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
