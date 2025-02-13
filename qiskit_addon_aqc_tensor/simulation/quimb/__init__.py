@@ -376,7 +376,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
     """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
 
     - ``loss_fn``
-    - ``loss_kwargs``
+    - ``loss_constants``
     """
     import quimb.tensor as qtn
 
@@ -411,7 +411,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeProcessFidelity, /) -> dict[
     """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
 
     - ``loss_fn``
-    - ``loss_kwargs``
+    - ``loss_constants``
     """
     import quimb.tensor as qtn
 
