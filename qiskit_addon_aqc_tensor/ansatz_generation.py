@@ -334,3 +334,32 @@ __all__ = [
     "ZXZ",
     "KAK",
 ]
+
+
+def parametrize_circuit(
+    qc: QuantumCircuit,
+    /,
+    *,
+    parameter_name: str = "theta",
+) -> QuantumCircuit:
+    ansatz = QuantumCircuit(*qc.qregs, *qc.cregs)
+    param_vec = ParameterVector(parameter_name)
+    initial_params: list[float] = []
+
+    for inst in qc.data:
+        operation = inst.operation
+        original_params = operation.params
+        fixed_indices = [
+            i for i, val in enumerate(original_params) if not isinstance(val, Parameter)
+        ]
+        if fixed_indices:
+            # Replace all non-Parameter entries with parameters
+            operation = operation.copy()
+            params = operation.params
+            allocated_params, _ = _allocate_parameters(param_vec, len(fixed_indices))
+            for i, param in zip(fixed_indices, allocated_params):
+                params[i] = param
+                initial_params.append(original_params[i])
+        ansatz.append(operation, inst.qubits, inst.clbits)
+
+    return ansatz, initial_params
