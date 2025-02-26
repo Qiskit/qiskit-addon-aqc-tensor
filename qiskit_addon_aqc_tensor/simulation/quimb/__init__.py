@@ -28,7 +28,7 @@ from qiskit.circuit import Gate, Parameter, ParameterExpression, QuantumCircuit
 from wrapt import register_post_import_hook
 
 from ...ansatz_generation import AnsatzBlock
-from ...objective import MaximizeUnitaryFidelity, MaximizeStateFidelity
+from ...objective import MaximizeStateFidelity, MaximizeUnitaryFidelity
 from ..abstract import TensorNetworkSimulationSettings
 from ..explicit_gradient import (
     compute_gradient_of_tensornetwork_overlap,
