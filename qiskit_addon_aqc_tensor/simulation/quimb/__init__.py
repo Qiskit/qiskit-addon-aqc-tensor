@@ -28,7 +28,7 @@ from qiskit.circuit import Gate, Parameter, ParameterExpression, QuantumCircuit
 from wrapt import register_post_import_hook
 
 from ...ansatz_generation import AnsatzBlock
-from ...objective import MaximizeProcessFidelity, MaximizeStateFidelity
+from ...objective import MaximizeUnitaryFidelity, MaximizeStateFidelity
 from ..abstract import TensorNetworkSimulationSettings
 from ..explicit_gradient import (
     compute_gradient_of_tensornetwork_overlap,
@@ -348,7 +348,7 @@ class _QuimbGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    _: Union[MaximizeStateFidelity, MaximizeProcessFidelity],
+    _: Union[MaximizeStateFidelity, MaximizeUnitaryFidelity],
     __: QuimbSimulator,
     preprocess_info: _QuimbGradientContext,
     qiskit_parameter_values: np.ndarray,
@@ -407,7 +407,7 @@ def maximize_state_fidelity_loss_function(
 
 
 @dispatch
-def tnoptimizer_objective_kwargs(objective: MaximizeProcessFidelity, /) -> dict[str, Any]:
+def tnoptimizer_objective_kwargs(objective: MaximizeUnitaryFidelity, /) -> dict[str, Any]:
     """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
 
     - ``loss_fn``

@@ -131,7 +131,7 @@ class OneMinusFidelity(MaximizeStateFidelity):
         super().__init__(target, ansatz, settings)
 
 
-class MaximizeProcessFidelity:
+class MaximizeUnitaryFidelity:
     """Maximize process fidelity."""
 
     def __init__(self, target, ansatz: QuantumCircuit, settings: TensorNetworkSimulationSettings):
@@ -172,5 +172,5 @@ class MaximizeProcessFidelity:
 __all__ = [
     "MaximizeStateFidelity",
     "OneMinusFidelity",
-    "MaximizeProcessFidelity",
+    "MaximizeUnitaryFidelity",
 ]
