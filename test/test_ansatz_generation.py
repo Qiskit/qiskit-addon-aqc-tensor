@@ -49,6 +49,7 @@ def test_ansatz_fails_given_three_qubit_gate():
     )
 
 
+<<<<<<< HEAD
 def test_explicit_3cnot_kak_implementation():
     rng = np.random.default_rng()
     params = rng.standard_normal(3)
@@ -59,3 +60,36 @@ def test_explicit_3cnot_kak_implementation():
     comparison_qc.rzz(-2 * params[2], 0, 1)
     fidelity = process_fidelity(kak, comparison_qc.to_gate())
     assert fidelity == pytest.approx(1)
+=======
+    def test_parameter_count_check(self):
+        rng = np.random.default_rng()
+        params = rng.standard_normal(2)
+        with pytest.raises(ValueError) as e_info:
+            KAK(params)
+        assert e_info.value.args[0] == "Wrong number of parameters"
+
+    def test_circuit_with_barrier(self):
+        qc = random_circuit(6, 4, max_operands=2)
+        qc.barrier()
+        qc.compose(random_circuit(6, 4, max_operands=2), inplace=True)
+        ansatz, _ = generate_ansatz_from_circuit(qc)
+        assert "barrier" not in {inst.operation.name for inst in ansatz.data}
+
+    def test_dynamic_circuit(self):
+        qc = QuantumCircuit(1, 1)
+        qc.measure(0, 0)
+        with qc.if_test((qc.clbits[0], True)):
+            qc.x(0)
+        with pytest.raises(ValueError) as e_info:
+            generate_ansatz_from_circuit(qc)
+        assert (
+            e_info.value.args[0]
+            == "Circuits which operate on classical bits are not yet supported."
+        )
+
+    def test_idle_qubit(self):
+        qc = QuantumCircuit(2)
+        qc.x(0)
+        _, initial_parameters = generate_ansatz_from_circuit(qc)
+        assert len(initial_parameters) == 3
+>>>>>>> 4865ef0 (Migrate from `c_if` to `if_test` for compatibility with Qiskit 2.0 (#78))
