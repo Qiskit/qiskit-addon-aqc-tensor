@@ -28,6 +28,7 @@ from qiskit_addon_aqc_tensor.simulation.abstract import (
     _compute_objective_and_gradient,
     _preprocess_for_gradient,
 )
+from qiskit_addon_aqc_tensor.simulation.aer import is_aer_available
 from qiskit_addon_aqc_tensor.simulation.explicit_gradient import _basis_gates
 
 
@@ -70,7 +71,7 @@ def _generate_random_ansatz(num_qubits: int):
             su2_gates=su2_gates,
             reps=random.randint(1, 2),
             parameter_prefix="c",
-            insert_barriers=_get_random_bool(),
+            insert_barriers=True,
         ),
         inplace=True,
         copy=False,
@@ -129,3 +130,54 @@ def test_mps_gradient_of_random_circuit(num_qubits: int, available_backend_fixtu
     numerical_grad = -2 * np.real(np.conj(f_0) * numerical_grad)
 
     assert grad == pytest.approx(numerical_grad, abs=1e-4)
+
+
+@pytest.mark.skipif(not is_aer_available(), reason="qiskit-aer is not installed")
+class TestExplicitGradient:
+    def test_no_parameters_throws_error(self, AerSimulator):
+        settings = AerSimulator(method="matrix_product_state")
+        tn = tensornetwork_from_circuit(QuantumCircuit(1), settings)
+        qc = QuantumCircuit(1)
+        with pytest.raises(ValueError) as e_info:
+            OneMinusFidelity(tn, qc, settings)
+        assert (
+            e_info.value.args[0]
+            == "Expects parametric circuit using ParameterVector object.\nThat is, placeholders are expected rather than concrete\nvalues for the variable parameters. The circuit specified\nhas no variable parameters. Check that the function\nassign_parameters() has not been applied to this circuit."
+        )
+
+    def test_non_basis_gate(self, AerSimulator):
+        settings = AerSimulator(method="matrix_product_state")
+        tn = tensornetwork_from_circuit(QuantumCircuit(2), settings)
+        qc = QuantumCircuit(2)
+        x = Parameter("x")
+        qc.rx(x, 0)
+        qc.cp(np.pi / 5, 0, 1)
+        with pytest.raises(ValueError) as e_info:
+            OneMinusFidelity(tn, qc, settings)
+        assert (
+            e_info.value.args[0]
+            == "Expects a gate from the list of basis ones: ['barrier', 'cx', 'cz', 'ecr', 'h', 'rx', 'ry', 'rz', 's', 'sdg', 'x', 'y', 'z'], got 'cp' instead."
+        )
+
+    def test_one_qubit_parametrized_pauli_error_messages(self, subtests, AerSimulator):
+        settings = AerSimulator(method="matrix_product_state")
+        tn = tensornetwork_from_circuit(QuantumCircuit(1), settings)
+        x = Parameter("x")
+        y = Parameter("y")
+        with subtests.test("Expression with multiple parameters"):
+            qc = QuantumCircuit(1)
+            qc.rx(x + y, 0)
+            with pytest.raises(ValueError) as e_info:
+                OneMinusFidelity(tn, qc, settings)
+            assert e_info.value.args[0] == "Expression cannot contain more than one Parameter"
+        with subtests.test("Nonlinear expression"):
+            qc = QuantumCircuit(1)
+            qc.rx(x**3, 0)
+            with pytest.raises(ValueError) as e_info:
+                OneMinusFidelity(tn, qc, settings)
+            assert (
+                e_info.value.args[0]
+                == "ParameterExpression's derivative must be a floating-point number, i.e., the expression must be in the form ax + b."
+            )
+
+    # FIXME test target and ansatz have different numbers of qubits
