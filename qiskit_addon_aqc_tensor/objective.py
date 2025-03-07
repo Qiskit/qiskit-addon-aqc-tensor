@@ -102,6 +102,11 @@ class MaximizeStateFidelity:
         """Target tensor network."""
         return self._target_tensornetwork
 
+    @property
+    def ansatz(self) -> QuantumCircuit | None:
+        """Parametrized ansatz circuit."""
+        return self._ansatz
+
 
 class OneMinusFidelity(MaximizeStateFidelity):
     """DEPRECATED objective function, equivalent to :class:`.MaximizeStateFidelity`."""
