@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 from qiskit import QuantumCircuit, transpile
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import EfficientSU2, TwoLocal
+from qiskit.circuit.library import efficient_su2, n_local
 
 from qiskit_addon_aqc_tensor.objective import MaximizeStateFidelity
 from qiskit_addon_aqc_tensor.simulation import (
@@ -39,7 +39,7 @@ def _generate_random_ansatz(num_qubits: int):
     """Generates a random ansatz circuit suitable for gradient computation."""
     su2_gates = ["h", "x", "y", "z", "rx", "ry", "rz"]
     random.shuffle(su2_gates)
-    qc = TwoLocal(
+    qc = n_local(
         num_qubits=num_qubits,
         rotation_blocks=su2_gates,
         entanglement_blocks=["cx", "cz"],
@@ -49,7 +49,7 @@ def _generate_random_ansatz(num_qubits: int):
     )
     random.shuffle(su2_gates)
     qc.compose(
-        TwoLocal(
+        n_local(
             num_qubits=num_qubits,
             rotation_blocks=su2_gates,
             entanglement_blocks=["cx", "cz"],
@@ -65,7 +65,7 @@ def _generate_random_ansatz(num_qubits: int):
     qc.rx(2 * x - 1.5, 0)
     random.shuffle(su2_gates)
     qc.compose(
-        EfficientSU2(
+        efficient_su2(
             num_qubits=num_qubits,
             su2_gates=su2_gates,
             reps=random.randint(1, 2),
