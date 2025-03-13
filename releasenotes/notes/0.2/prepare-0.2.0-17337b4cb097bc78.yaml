@@ -1,0 +1,4 @@
+---
+prelude: |
+  This release renames the primary objective to
+  :class:`.MaximizeStateFidelity` and adds support for Qiskit 2.0.

@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    The ``OneMinusFidelity`` objective function has been renamed and
+    is now known as :class:`.MaximizeStateFidelity`.  As a related
+    change, one should now call the
+    :meth:`~.MaximizeStateFidelity.loss_function` method to obtain the
+    value and gradient of the loss function, instead of calling the
+    instance directly (through its ``__call__`` method).
