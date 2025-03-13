@@ -141,7 +141,9 @@ def _register_preprocessor(*args):
 
 
 def _basis_gates() -> list[str]:
-    return list(_preprocessors.keys())
+    # Qiskit 2.0 no longer accepts "barrier" as a basis gate, so we remove it
+    # from the returned list.
+    return list(_preprocessors.keys() - {"barrier"})
 
 
 @_register_preprocessor("h")
