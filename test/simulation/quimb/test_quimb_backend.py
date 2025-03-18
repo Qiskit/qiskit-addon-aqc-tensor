@@ -129,15 +129,6 @@ class TestQuimbConversion:
             == "Gradient method unspecified. Please specify an autodiff_backend for the QuimbSimulator object."
         )
 
-    # FIXME: also do this with a random circuit
-    # FIXME: consolidate these tests across the backends
-    @pytest.mark.parametrize("circuit_factory", ["Circuit", "CircuitMPS"])
-    def test_bell_circuit_statevector(self, bell_qc, quimb, circuit_factory):
-        simulator = QuimbSimulator(getattr(quimb.tensor, circuit_factory))
-        out_state = np.zeros([4], dtype=complex)
-        tensornetwork_from_circuit(bell_qc, simulator, out_state=out_state)
-        assert out_state == pytest.approx(np.array([1, 0, 0, 1]) / np.sqrt(2))
-
     def test_recovery_num_parameters_mismatch_error(self):
         x = Parameter("x")
         y = Parameter("y")

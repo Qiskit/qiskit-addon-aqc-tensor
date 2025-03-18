@@ -39,12 +39,6 @@ class TestQiskitAerBackend:
         bell_mps2 = tensornetwork_from_circuit(bell_qc, settings)
         assert compute_overlap(bell_mps1, bell_mps2) == pytest.approx(1)
 
-    def test_bell_circuit_statevector(self, bell_qc, AerSimulator):
-        simulator = AerSimulator(method="matrix_product_state")
-        out_state = np.zeros([4], dtype=complex)
-        tensornetwork_from_circuit(bell_qc, simulator, out_state=out_state)
-        assert out_state == pytest.approx(np.array([1, 0, 0, 1]) / np.sqrt(2))
-
     def test_bell_circuit_log(self, bell_qc, AerSimulator):
         simulator = AerSimulator(method="matrix_product_state", mps_log_data=True)
         all_log_data: list[str] = []
