@@ -16,7 +16,7 @@ import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import CXGate, RXGate, XXPlusYYGate
 
-from qiskit_addon_aqc_tensor.objective import OneMinusFidelity
+from qiskit_addon_aqc_tensor.objective import MaximizeStateFidelity
 from qiskit_addon_aqc_tensor.simulation import (
     compute_overlap,
     tensornetwork_from_circuit,
@@ -123,7 +123,7 @@ class TestQuimbConversion:
         x = Parameter("x")
         qc.rx(x, 0)
         with pytest.raises(ValueError) as e_info:
-            OneMinusFidelity(None, qc, settings)
+            MaximizeStateFidelity(None, qc, settings)
         assert (
             e_info.value.args[0]
             == "Gradient method unspecified. Please specify an autodiff_backend for the QuimbSimulator object."

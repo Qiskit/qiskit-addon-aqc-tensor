@@ -15,12 +15,13 @@ import pytest
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 
-from qiskit_addon_aqc_tensor.objective import OneMinusFidelity
+from qiskit_addon_aqc_tensor.objective import MaximizeStateFidelity
 from qiskit_addon_aqc_tensor.simulation import (
     tensornetwork_from_circuit,
 )
 
 
+# pylint: disable=no-self-use
 class TestObjective:
     def test_ansatz_target_qubit_mismatch(self, available_backend_fixture):
         settings = available_backend_fixture
@@ -29,7 +30,7 @@ class TestObjective:
         ansatz = QuantumCircuit(1)
         ansatz.rx(x, 0)
         with pytest.raises(ValueError) as e_info:
-            OneMinusFidelity(target, ansatz, settings)
+            MaximizeStateFidelity(target, ansatz, settings)
         assert (
             e_info.value.args[0] == "Ansatz and target have different numbers of qubits (1 vs. 2)."
         )
