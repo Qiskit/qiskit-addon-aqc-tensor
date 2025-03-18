@@ -305,7 +305,13 @@ def _preprocess_for_gradient(objective, settings: QuimbSimulator):
         )
     if objective._ansatz is not None:
         ansatz_num_qubits = objective._ansatz.num_qubits
-        target_num_qubits = objective._target_tensornetwork.N
+        target = objective._target_tensornetwork
+        try:
+            # As implemented by quimb.tensor.Circuit
+            target_num_qubits = target.N
+        except AttributeError:  # pragma: no cover
+            # As implemented by quimb.tensor.TensorNetworkGen
+            target_num_qubits = target.nsites
         if ansatz_num_qubits != target_num_qubits:
             raise ValueError(
                 "Ansatz and target have different numbers of qubits "
