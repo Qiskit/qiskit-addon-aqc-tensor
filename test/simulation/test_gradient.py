@@ -179,5 +179,3 @@ class TestExplicitGradient:
                 e_info.value.args[0]
                 == "ParameterExpression's derivative must be a floating-point number, i.e., the expression must be in the form ax + b."
             )
-
-    # FIXME test target and ansatz have different numbers of qubits

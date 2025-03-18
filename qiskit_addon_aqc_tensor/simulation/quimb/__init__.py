@@ -303,6 +303,14 @@ def _preprocess_for_gradient(objective, settings: QuimbSimulator):
             "Gradient method unspecified. Please specify an autodiff_backend "
             "for the QuimbSimulator object."
         )
+    if objective._ansatz is not None:
+        ansatz_num_qubits = objective._ansatz.num_qubits
+        target_num_qubits = objective._target_tensornetwork.N
+        if ansatz_num_qubits != target_num_qubits:
+            raise ValueError(
+                "Ansatz and target have different numbers of qubits "
+                f"({ansatz_num_qubits} vs. {target_num_qubits})."
+            )
     if settings.autodiff_backend == "explicit":
         # FIXME: error if target and/or settings could result in non-MPS, in
         # order to prevent a later MethodError from plum
