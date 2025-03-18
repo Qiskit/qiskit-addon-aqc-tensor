@@ -81,7 +81,7 @@ class MaximizeStateFidelity:
             "instead of calling the instance directly."
         ),
     )
-    def __call__(self, x: np.ndarray) -> tuple[float, np.ndarray]:
+    def __call__(self, x: np.ndarray) -> tuple[float, np.ndarray]:  # pragma: no cover
         """Evaluate ``(objective_value, gradient)`` of function at point ``x``.
 
         This method is DEPRECATED since v0.2.  The
@@ -117,7 +117,7 @@ class OneMinusFidelity(MaximizeStateFidelity):
         target: TensorNetworkState,
         ansatz: QuantumCircuit,
         settings: TensorNetworkSimulationSettings,
-    ):
+    ):  # pragma: no cover
         """Initialize the objective function.
 
         The :class:`.OneMinusFidelity` class is DEPRECATED since v0.2.
