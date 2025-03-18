@@ -65,9 +65,10 @@ def _quimb_factory_factory(name, autodiff_backend):
 _simulator_factories = []
 if is_quimb_available():
     _simulator_factories.append(_quimb_factory_factory("CircuitMPS", "explicit"))
-    _simulator_factories.append(_quimb_factory_factory("Circuit", "jax"))
     _simulator_factories.append(_quimb_factory_factory("CircuitPermMPS", "explicit"))
     _simulator_factories.append(_quimb_factory_factory("CircuitPermMPS", "jax"))
+    _simulator_factories.append(_quimb_factory_factory("Circuit", "jax"))
+    _simulator_factories.append(_quimb_factory_factory("Circuit", "autograd"))
 if is_aer_available():
     _simulator_factories.append(_aersimulator_factory)
     _simulator_factories.append(lambda: QiskitAerSimulationSettings(_aersimulator_factory()))
@@ -77,3 +78,38 @@ if is_aer_available():
 def available_backend_fixture(request):
     """A fixture that provides all available backends."""
     return request.param()
+
+
+# The below lines allow skipping some tests depending on tox environment or command-line option
+# https://docs.pytest.org/en/latest/example/simple.html#control-skipping-of-tests-according-to-command-line-option
+
+
+# pylint: disable=missing-function-docstring
+def pytest_addoption(parser):
+    parser.addoption(
+        "--coverage",
+        action="store_true",
+        default=False,
+        help="skip tests that should not be used for calculating coverage",
+    )
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "skipforcoverage: skip test during coverage run")
+
+
+def pytest_collection_modifyitems(config, items):
+    flags = (
+        (
+            "--coverage",
+            "skipforcoverage",
+            True,
+            "deliberately skipping, as --coverage was provided",
+        ),
+    )
+    for option, keyword, skip_when, reason in flags:
+        if config.getoption(option) is skip_when:
+            marker = pytest.mark.skip(reason=reason)
+            for item in items:
+                if keyword in item.keywords:
+                    item.add_marker(marker)

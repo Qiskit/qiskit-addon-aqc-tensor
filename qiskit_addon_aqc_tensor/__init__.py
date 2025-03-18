@@ -24,6 +24,7 @@ except PackageNotFoundError:  # pragma: no cover
     # Package is not installed
     pass
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "generate_ansatz_from_circuit",
 ]

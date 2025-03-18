@@ -38,11 +38,33 @@ jobs:
         run: |
           git clone https://github.com/Qiskit/qiskit
           cd qiskit
+          git rev-parse HEAD
           python -m build --wheel
       - name: Build qiskit-ibm-runtime development wheel
         run: |
           git clone https://github.com/Qiskit/qiskit-ibm-runtime
           cd qiskit-ibm-runtime
+          git rev-parse HEAD
+          python -m build --wheel
+      - name: Build qiskit-addon-utils development wheel
+        run: |
+          git clone https://github.com/Qiskit/qiskit-addon-utils
+          cd qiskit-addon-utils
+          git rev-parse HEAD
+          # Unpin qiskit<2
+          extremal-python-dependencies pin-dependencies --inplace qiskit
+          python -m build --wheel
+      - name: Build qiskit-quimb development wheel
+        run: |
+          git clone https://github.com/qiskit-community/qiskit-quimb
+          cd qiskit-quimb
+          git rev-parse HEAD
+          python -m build --wheel
+      - name: Build quimb development wheel
+        run: |
+          git clone https://github.com/jcmgray/quimb
+          cd quimb
+          git rev-parse HEAD
           python -m build --wheel
       - name: Pin development versions
         shell: bash
@@ -50,6 +72,9 @@ jobs:
           extremal-python-dependencies pin-dependencies --inplace
           "qiskit @ file:$(echo qiskit/dist/*.whl)"
           "qiskit-ibm-runtime @ file:$(echo qiskit-ibm-runtime/dist/*.whl)"
+          "qiskit-addon-utils @ file:$(echo qiskit-addon-utils/dist/*.whl)"
+          "qiskit-quimb @ file:$(echo qiskit-quimb/dist/*.whl)"
+          "quimb @ file:$(echo quimb/dist/*.whl)"
       - name: Test using tox environment
         run: |
           tox -e py,notebook,quimb-only,aer-only --parallel --parallel-no-spinner

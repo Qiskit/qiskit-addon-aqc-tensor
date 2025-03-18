@@ -20,7 +20,7 @@ from qiskit.circuit import (
     QuantumCircuit,
 )
 
-from ...objective import OneMinusFidelity
+from ...objective import MaximizeStateFidelity
 from ..abstract import (
     apply_circuit_to_state,
     compute_overlap,
@@ -35,6 +35,14 @@ from .simulation import AerSimulator, QiskitAerSimulationSettings
 
 @dispatch
 def _preprocess_for_gradient(objective, settings: Union[QiskitAerSimulationSettings, AerSimulator]):
+    if objective._ansatz is not None:
+        ansatz_num_qubits = objective._ansatz.num_qubits
+        target_num_qubits = len(objective._target_tensornetwork.gamma)
+        if ansatz_num_qubits != target_num_qubits:
+            raise ValueError(
+                "Ansatz and target have different numbers of qubits "
+                f"({ansatz_num_qubits} vs. {target_num_qubits})."
+            )
     gate_actions = preprocess_circuit_for_backtracking(objective._ansatz, settings)
     lhs_tensornetwork = tensornetwork_from_circuit(
         QuantumCircuit(objective._ansatz.num_qubits), settings
@@ -44,7 +52,7 @@ def _preprocess_for_gradient(objective, settings: Union[QiskitAerSimulationSetti
 
 @dispatch
 def _compute_objective_and_gradient(
-    objective: OneMinusFidelity,
+    objective: MaximizeStateFidelity,
     settings: Union[QiskitAerSimulationSettings, AerSimulator],
     preprocess_info,
     x: np.ndarray,

@@ -51,7 +51,7 @@ def is_aer_available() -> bool:
     """Return ``True`` is qiskit-aer is installed, ``False`` otherwise."""
     try:
         metadata_version("qiskit-aer")
-    except PackageNotFoundError:
+    except PackageNotFoundError:  # pragma: no cover
         return False
     return True
 
@@ -99,8 +99,7 @@ def _aer_mps_from_circuit(
     *,
     out_state: np.ndarray | None = None,
 ) -> QiskitAerMPS:
-    r"""
-    Compute the result of action ``output = circuit @ |0>`` in MPS format.
+    r"""Compute the result of action ``output = circuit @ |0>`` in MPS format.
 
     Args:
         qc: quantum circuit acting on state :math:`|0\rangle`.

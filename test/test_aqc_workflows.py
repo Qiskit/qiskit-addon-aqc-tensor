@@ -22,7 +22,7 @@ from qiskit_addon_aqc_tensor.ansatz_generation import (
     AnsatzBlock,
     generate_ansatz_from_circuit,
 )
-from qiskit_addon_aqc_tensor.objective import OneMinusFidelity
+from qiskit_addon_aqc_tensor.objective import MaximizeStateFidelity
 from qiskit_addon_aqc_tensor.simulation import (
     compute_overlap,
     tensornetwork_from_circuit,
@@ -55,9 +55,9 @@ def test_basic_workflow(available_backend_fixture, circuit_pair):
     ansatz, initial_parameters = generate_ansatz_from_circuit(
         good_circuit, qubits_initially_zero=True
     )
-    objective = OneMinusFidelity(target_mps, ansatz, simulator_settings)
+    objective = MaximizeStateFidelity(target_mps, ansatz, simulator_settings)
     result = minimize(
-        objective,
+        objective.loss_function,
         initial_parameters,
         method="L-BFGS-B",
         jac=True,

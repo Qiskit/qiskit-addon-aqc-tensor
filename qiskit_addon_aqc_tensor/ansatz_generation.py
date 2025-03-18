@@ -9,17 +9,9 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""
-Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit.
 
-.. currentmodule:: qiskit_addon_aqc_tensor.ansatz_generation
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    generate_ansatz_from_circuit
-"""
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
+"""Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit."""
 
 from __future__ import annotations
 
@@ -129,20 +121,73 @@ def generate_ansatz_from_circuit(
     qubits_initially_zero: bool = False,
     parameter_name: str = "theta",
 ) -> tuple[QuantumCircuit, list[float]]:
-    """Generate an ansatz from the two-qubit connectivity structure of a circuit.
+    r"""Generate an ansatz from the two-qubit connectivity structure of a circuit.
 
-    See explanatatory material for motivation.
+    See the `explanatatory material
+    <https://qiskit.github.io/qiskit-addon-aqc-tensor/explanation/index.html#ansatz-generation-motivation>`__
+    for motivation.
 
     Args:
         qc: A circuit, which is assumed to be unitary.  Barriers are ignored.
         qubits_initially_zero: If ``True``, the first Z rotation on each qubit
-            is removed from the ansatz under the assumption that it has no effect.
+            is fixed to zero because such a rotation has no effect on the state
+            :math:`|0\rangle`.
         parameter_name: Name for the :class:`~qiskit.circuit.ParameterVector`
             representing the free parameters in the returned ansatz circuit.
 
     Returns:
-        2-tuple containing the ansatz circuit and a list of parameter values that,
-            when bound to the ansatz, provide a circuit equivalent to the input circuit.
+        ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
+        is equivalent to ``qc`` up to a global phase.
+
+    Example:
+    ========
+
+    Consider the following circuit as an example:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: reset
+
+       from qiskit import QuantumCircuit
+
+       qc = QuantumCircuit(6)
+       qc.rx(0.4, 0)
+       qc.ryy(0.2, 2, 3)
+       qc.h(2)
+       qc.rz(0.1, 2)
+       qc.rxx(0.3, 0, 1)
+       qc.rzz(0.3, 0, 1)
+       qc.cx(2, 1)
+       qc.s(1)
+       qc.h(4)
+       qc.draw("mpl")
+
+    If the above circuit is passed to :func:`.generate_ansatz_from_circuit`, it will return an ansatz with parametrized two-qubit KAK rotations in the same locations as the input:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
+
+       ansatz, initial_params = generate_ansatz_from_circuit(
+           qc, qubits_initially_zero=True, parameter_name="x"
+       )
+       ansatz.draw("mpl")
+
+    Note that in the generated ansatz, all consecutive single-qubit gates are collapsed into the same ZXZ block, and all consecutive two-qubit gates are collapsed into a single KAK block, up to single-qubit rotations.
+
+    Further, the :func:`.generate_ansatz_from_circuit` function provides parameters which, when bound to the ansatz, will result in a circuit equivalent to the original one, up to a global phase:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       ansatz.assign_parameters(initial_params).draw("mpl")
+
     """
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
@@ -280,6 +325,7 @@ def generate_ansatz_from_circuit(
     return ansatz, initial_params
 
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "generate_ansatz_from_circuit",
     "AnsatzBlock",

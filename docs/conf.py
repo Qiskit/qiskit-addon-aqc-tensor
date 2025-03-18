@@ -12,9 +12,7 @@
 
 # pylint: disable=invalid-name
 
-"""
-Sphinx documentation builder
-"""
+"""Sphinx documentation builder."""
 
 # General options:
 import inspect
@@ -71,11 +69,21 @@ html_theme_options = {
     "sidebar_qiskit_ecosystem_member": False,
 }
 html_static_path = ["_static"]
+html_css_files = ["css/custom.css"]
 templates_path = ["_templates"]
 
-# autodoc/autosummary options
+# Options for autodoc. These reflect the values from Qiskit SDK and Runtime.
 autosummary_generate = True
 autosummary_generate_overwrite = False
+autoclass_content = "both"
+autodoc_typehints = "description"
+autodoc_default_options = {
+    "inherited-members": None,
+    "show-inheritance": True,
+}
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+
 
 # nbsphinx options (for tutorials)
 nbsphinx_timeout = 180
@@ -92,8 +100,27 @@ exclude_patterns = [
 plot_html_show_formats = False
 plot_formats = ["svg"]
 
-# Redirects for pages that have moved
-redirects = {}
+# ----------------------------------------------------------------------------------
+# Redirects
+# ----------------------------------------------------------------------------------
+
+_inlined_apis = [
+    ("qiskit_addon_aqc_tensor.objective", "MaximizeStateFidelity"),
+    ("qiskit_addon_aqc_tensor.simulation", "TensorNetworkState"),
+    ("qiskit_addon_aqc_tensor.simulation", "TensorNetworkSimulationSettings"),
+    ("qiskit_addon_aqc_tensor.simulation", "tensornetwork_from_circuit"),
+    ("qiskit_addon_aqc_tensor.simulation", "apply_circuit_to_state"),
+    ("qiskit_addon_aqc_tensor.simulation", "compute_overlap"),
+]
+
+redirects = {
+    "stubs/qiskit_addon_aqc_tensor.ansatz_generation.generate_ansatz_from_circuit": "../apidocs/qiskit-addon-aqc-tensor.html#qiskit_addon_aqc_tensor.generate_ansatz_from_circuit",
+    **{
+        f"stubs/{module}.{name}": f"../apidocs/{module.split('.')[-1]}.html#{module}.{name}"
+        for module, name in _inlined_apis
+    },
+}
+
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
@@ -106,7 +133,7 @@ intersphinx_mapping = {
     ),
     "qiskit-aer": ("https://qiskit.github.io/qiskit-aer/", None),
     "rustworkx": ("https://www.rustworkx.org/", None),
-    "qiskit_addon_utils": ("https://qiskit.github.io/qiskit-addon-utils/", None),
+    "qiskit_addon_utils": ("https://docs.quantum.ibm.com/api/qiskit-addon-utils/", None),
     "quimb": ("https://quimb.readthedocs.io/en/latest/", None),
 }
 
@@ -184,4 +211,4 @@ def linkcode_resolve(domain, info):
     else:
         ending_lineno = lineno + len(source) - 1
         linespec = f"#L{lineno}-L{ending_lineno}"
-    return f"https://github.com/Qiskit/qiskit-addon-aqc_tensor/tree/{GITHUB_BRANCH}/qiskit_addon_aqc_tensor/{file_name}{linespec}"
+    return f"https://github.com/Qiskit/qiskit-addon-aqc-tensor/tree/{GITHUB_BRANCH}/qiskit_addon_aqc_tensor/{file_name}{linespec}"

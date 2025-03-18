@@ -20,6 +20,12 @@ import numpy as np
 from plum import dispatch
 from qiskit.circuit import Gate, QuantumCircuit
 
+# NOTE: This file contains abstract classes and functions.  The functions in
+# this file are implemented differently for each tensor-network backend, and
+# the backend method is chosen dynamically based on the type(s) passed to the
+# function.  Dispatch is powered by plum-dispatch, a multiple dispatch library
+# for Python.
+
 
 class TensorNetworkState:
     """Abstract tensor network state."""
@@ -91,14 +97,16 @@ def apply_circuit_to_state(
 
 
 @dispatch.abstract
-def _preprocess_for_gradient(objective, settings: TensorNetworkSimulationSettings):
+def _preprocess_for_gradient(
+    objective, settings: TensorNetworkSimulationSettings
+):  # pragma: no cover
     raise NotImplementedError
 
 
 @dispatch.abstract
 def _compute_objective_and_gradient(
     objective, settings: TensorNetworkSimulationSettings, preprocess_info, x: np.ndarray
-) -> tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:  # pragma: no cover
     raise NotImplementedError
 
 
@@ -113,8 +121,7 @@ def _compute_objective_and_gradient(
 def _compute_overlap_with_local_gate_applied(
     psi_1: TensorNetworkState, gate: Gate, qubit: int, psi_2: TensorNetworkState, /
 ) -> complex:  # pragma: no cover
-    r"""
-    Compute overlap of two quantum states with a single local (one-qubit) gate in the middle.
+    r"""Compute overlap of two quantum states with a single local (one-qubit) gate in the middle.
 
     :math:`\langle \psi_1 | G | \psi_2 \rangle`.
 

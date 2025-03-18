@@ -9,8 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-r"""
-Functions for computing the gradient of :math:`\langle 0 | V^{\dagger}(\vec\theta) | \psi \rangle`.
+r"""Functions for computing the gradient of :math:`\langle 0 | V^{\dagger}(\vec\theta) | \psi \rangle`.
 
 The purpose of this module is to enable the objective function evaluation (:mod:`qiskit_addon_aqc_tensor.objective`)
 to have access to the gradient alongside the function's value.
@@ -53,8 +52,7 @@ from .abstract import (
 
 
 def _compute_gate_to_parameter_mapping(qc: QuantumCircuit, /) -> dict[str, int]:
-    """
-    Compute mapping between the parameter name and the index of the corresponding entry in the :class:`.ParameterVector` object.
+    """Compute mapping between the parameter name and the index of the corresponding entry in the :class:`.ParameterVector` object.
 
     Recall, Qiskit assigns the parameters sorted by parameter name.
     This remains unique under circuit transformation, and therefore binding
@@ -114,7 +112,7 @@ def preprocess_circuit_for_backtracking(
         except KeyError as ex:
             raise ValueError(
                 f"Expects a gate from the list of basis ones: "
-                f"'{_basis_gates()}', got '{operation.name}' instead."
+                f"{sorted(_basis_gates())}, got '{operation.name}' instead."
             ) from ex
         action = action_generator(pname2index, operation, qubit_indices, settings)
         if action is not None:
@@ -143,7 +141,9 @@ def _register_preprocessor(*args):
 
 
 def _basis_gates() -> list[str]:
-    return list(_preprocessors.keys())
+    # Qiskit 2.0 no longer accepts "barrier" as a basis gate, so we remove it
+    # from the returned list.
+    return list(_preprocessors.keys() - {"barrier"})
 
 
 @_register_preprocessor("h")
@@ -299,8 +299,7 @@ def compute_gradient_of_tensornetwork_overlap(
     lhs: TensorNetworkState,
     vdagger_rhs: TensorNetworkState,
 ) -> np.ndarray:
-    r"""
-    Compute gradient of the dot product :math:`\langle \mathrm{lhs} | V^\dagger(\vec\theta) | \mathrm{rhs} \rangle` using tensor networks.
+    r"""Compute gradient of the dot product :math:`\langle \mathrm{lhs} | V^\dagger(\vec\theta) | \mathrm{rhs} \rangle` using tensor networks.
 
     Here, :math:`V` is a parametric circuit (ansatz), :math:`| \mathrm{rhs} \rangle` is a target state
     (right-hand side vector as a :class:`.TensorNetworkState`), and :math:`| \mathrm{lhs} \rangle` is a low-entangled
@@ -315,6 +314,7 @@ def compute_gradient_of_tensornetwork_overlap(
         thetas: angular parameters of the circuit.
         lhs: left-hand side vector as a :class:`.TensorNetworkState`.
         vdagger_rhs: :math:`V^\dagger(\vec\theta)` times the right-hand side vector as a :class:`.TensorNetworkState`.
+
     Returns:
         Vector of complex gradients.
     """

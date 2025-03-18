@@ -27,7 +27,7 @@ from qiskit.circuit import Gate, Parameter, ParameterExpression, QuantumCircuit
 from wrapt import register_post_import_hook
 
 from ...ansatz_generation import AnsatzBlock
-from ...objective import OneMinusFidelity
+from ...objective import MaximizeStateFidelity
 from ..abstract import TensorNetworkSimulationSettings
 from ..explicit_gradient import (
     compute_gradient_of_tensornetwork_overlap,
@@ -66,9 +66,9 @@ def is_quimb_available() -> bool:
 class QuimbCircuitFactory(Protocol):
     """Quimb circuit factory."""
 
-    def __call__(
+    def __call__(  # noqa: D102
         self, *, N: int, psi0: quimb.tensor.TensorNetworkGenVector | None = None
-    ) -> quimb.tensor.Circuit:  # noqa: D102; # pragma: no cover
+    ) -> quimb.tensor.Circuit:  # pragma: no cover
         ...
 
 
@@ -90,7 +90,9 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
     #: Whether to display a progress bar while applying gates.
     progbar: bool = False
 
-    def _construct_circuit(self, qc: QuantumCircuit, /, **kwargs):
+    def _construct_circuit(
+        self, qc: QuantumCircuit, /, *, out_state: np.ndarray | None = None, **kwargs
+    ):
         import qiskit_quimb
 
         qc = qc.decompose(AnsatzBlock)
@@ -98,6 +100,8 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
         circ = quimb_circuit_factory(N=qc.num_qubits, **kwargs)
         gates = qiskit_quimb.quimb_gates(qc)
         circ.apply_gates(gates, progbar=self.progbar)
+        if out_state is not None:
+            out_state[:] = np.squeeze(circ.psi.to_dense())
         return circ
 
 
@@ -111,8 +115,10 @@ def tensornetwork_from_circuit(
     qc: QuantumCircuit,
     settings: QuimbSimulator,
     /,
+    *,
+    out_state: Optional[np.ndarray] = None,
 ) -> quimb.tensor.Circuit:
-    return settings._construct_circuit(qc)
+    return settings._construct_circuit(qc, out_state=out_state)
 
 
 @dispatch
@@ -131,7 +137,7 @@ def _compute_overlap_with_local_gate_applied(
 @dispatch
 def _apply_one_qubit_gate_inplace(circ: CircuitMPS, gate: Gate, qubit: int, /) -> None:
     """Apply one-qubit gate in place."""
-    from qiskit_quimb.circuit import quimb_gate
+    from qiskit_quimb import quimb_gate
 
     quimb_gate_ = quimb_gate(gate, (qubit,))
     if quimb_gate_ is not None:
@@ -148,7 +154,7 @@ def _apply_two_qubit_gate_inplace(
     /,
 ) -> None:
     """Apply two-qubit gate in place."""
-    from qiskit_quimb.circuit import quimb_gate
+    from qiskit_quimb import quimb_gate
 
     quimb_gate_ = quimb_gate(gate, (q0, q1))
     if quimb_gate_ is not None:
@@ -171,10 +177,7 @@ def apply_circuit_to_state(
     Returns:
         The new state.
     """
-    circuit = settings._construct_circuit(qc, psi0=circ0.psi)
-    if out_state is not None:
-        out_state[:] = circuit.psi.to_dense()
-    return circuit
+    return settings._construct_circuit(qc, out_state=out_state, psi0=circ0.psi)
 
 
 class QiskitQuimbConversionContext:
@@ -190,13 +193,13 @@ def qiskit_ansatz_to_quimb(
 ) -> tuple[quimb.tensor.Circuit, QiskitQuimbConversionContext]:
     """Convert a Qiskit ansatz to a Quimb parametrized circuit."""
     import quimb.tensor as qtn
-    from qiskit_quimb.circuit import quimb_gate
+    from qiskit_quimb import quimb_gate
 
     qc = qc.decompose(AnsatzBlock)
     if len(initial_parameters) != qc.num_parameters:
         raise ValueError(
-            f"{len(initial_parameters)} parameters were passed, but "
-            f"the circuit has {qc.num_parameters} parameters."
+            f"{len(initial_parameters)} parameter(s) were passed, but "
+            f"the circuit has {qc.num_parameters} parameter(s)."
         )
     circ = qtn.Circuit(qc.num_qubits)
     mapping: list[tuple[int, float, float]] = [(-1, 0.0, 0.0)] * qc.num_parameters
@@ -227,7 +230,7 @@ def qiskit_ansatz_to_quimb(
             if isinstance(m, ParameterExpression):
                 raise ValueError(
                     "The Quimb backend currently requires that each ParameterExpression "
-                    f"must be in the form mx + b (not {m}).  Otherwise, the backend is unable "
+                    f"must be in the form mx + b (not {expr}).  Otherwise, the backend is unable "
                     "to recover the parameter."
                 )
             b = expr.bind({param: 0}).numeric()
@@ -235,7 +238,7 @@ def qiskit_ansatz_to_quimb(
             fixed_op = deepcopy(op)
             try:
                 index = parameter_lookup[param]
-            except KeyError as ex:
+            except KeyError as ex:  # pragma: no cover
                 raise RuntimeError(
                     "Unexpected error: Parameter of operation is not listed "
                     "among the circuit's parameters."
@@ -257,10 +260,18 @@ def qiskit_ansatz_to_quimb(
             quimb_gate_ = quimb_gate(op, qubits)
             if quimb_gate_ is not None:
                 circ.apply_gate(quimb_gate_)
-        else:
+        else:  # pragma: no cover
             raise ValueError("A parameter in the circuit has an unexpected type.")
     for j, _, _ in mapping:
-        if j == -1:
+        if j == -1:  # pragma: no cover
+            # NOTE: There seems to be no obvious way to trigger this error.
+            # Even the following snippet results in the parameter being removed
+            # from the circuit.
+            #
+            # qc = QuantumCircuit(1)
+            # x = Parameter("x")
+            # qc.rx(x, 0)
+            # qc.data[0] = CircuitInstruction(RXGate(np.pi / 3), qubits=[0])
             raise ValueError(
                 "Some parameter(s) in the given Qiskit circuit remain unused. "
                 "This use case is not currently supported by the Quimb conversion code."
@@ -270,7 +281,7 @@ def qiskit_ansatz_to_quimb(
 
 def recover_parameters_from_quimb(
     circ_opt: quimb.tensor.Circuit, ctx: QiskitQuimbConversionContext, /
-):
+) -> list[float]:
     """Recover Qiskit circuit parameters from a Quimb circuit."""
     quimb_parametrized_gates = [gate for gate in circ_opt.gates if gate.parametrize]
     mapping = ctx._mapping
@@ -278,7 +289,7 @@ def recover_parameters_from_quimb(
         raise ValueError(
             "The length of the mapping in the provided QiskitQuimbConversionContext "
             "does not match the number of parametrized gates in the circuit "
-            f"({len(mapping)}) vs. ({len(quimb_parametrized_gates)})."
+            f"({len(mapping)} vs. {len(quimb_parametrized_gates)})."
         )
     # `(y - b) / m` is the inversion of the parameter expression, which we
     # assumed above to be in the form mx + b.
@@ -292,6 +303,20 @@ def _preprocess_for_gradient(objective, settings: QuimbSimulator):
             "Gradient method unspecified. Please specify an autodiff_backend "
             "for the QuimbSimulator object."
         )
+    if objective._ansatz is not None:
+        ansatz_num_qubits = objective._ansatz.num_qubits
+        target = objective._target_tensornetwork
+        try:
+            # As implemented by quimb.tensor.Circuit
+            target_num_qubits = target.N
+        except AttributeError:  # pragma: no cover
+            # As implemented by quimb.tensor.TensorNetworkGen
+            target_num_qubits = target.nsites
+        if ansatz_num_qubits != target_num_qubits:
+            raise ValueError(
+                "Ansatz and target have different numbers of qubits "
+                f"({ansatz_num_qubits} vs. {target_num_qubits})."
+            )
     if settings.autodiff_backend == "explicit":
         # FIXME: error if target and/or settings could result in non-MPS, in
         # order to prevent a later MethodError from plum
@@ -309,7 +334,7 @@ class _ExplicitGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    objective: OneMinusFidelity,
+    objective: MaximizeStateFidelity,
     settings: QuimbSimulator,
     preprocess_info: _ExplicitGradientContext,
     x: np.ndarray,
@@ -347,7 +372,7 @@ class _QuimbGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    _: OneMinusFidelity,
+    _: MaximizeStateFidelity,
     __: QuimbSimulator,
     preprocess_info: _QuimbGradientContext,
     qiskit_parameter_values: np.ndarray,
@@ -371,7 +396,7 @@ def _compute_objective_and_gradient(
 
 
 @dispatch
-def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, Any]:
+def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[str, Any]:
     """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
 
     - ``loss_fn``
@@ -383,12 +408,12 @@ def tnoptimizer_objective_kwargs(objective: OneMinusFidelity, /) -> dict[str, An
     if isinstance(target, qtn.Circuit):
         target = target.psi
     return {
-        "loss_fn": oneminusfidelity_loss_fn,
+        "loss_fn": maximize_state_fidelity_loss_function,
         "loss_kwargs": {"target": target},
     }
 
 
-def oneminusfidelity_loss_fn(
+def maximize_state_fidelity_loss_function(
     circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.TensorNetworkGenVector
 ):
     """Loss function for use with Quimb, compatible with automatic differentiation.
@@ -405,6 +430,7 @@ def oneminusfidelity_loss_fn(
     return 1 - fidelity
 
 
+# Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "is_quimb_available",
     "QuimbCircuitFactory",

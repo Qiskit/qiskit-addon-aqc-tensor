@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    This release fixes the import of :func:`~qiskit_quimb.quimb_gate`
+    to work on versions of qiskit-quimb greater than 0.0.5.  The
+    aforementioned function is now imported from the toplevel
+    :mod:`qiskit_quimb` instead of :mod:`qiskit_quimb.circuit`.
