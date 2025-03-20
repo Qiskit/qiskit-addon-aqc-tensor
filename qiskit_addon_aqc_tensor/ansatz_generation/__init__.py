@@ -12,7 +12,7 @@
 
 """Tools for generating ansatz circuits."""
 
-from .ansatz_generation import (
+from .kak_general import (
     KAK,
     ZXZ,
     AnsatzBlock,
