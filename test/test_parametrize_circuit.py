@@ -21,14 +21,14 @@ from qiskit_addon_aqc_tensor import parametrize_circuit
 
 class TestParametrizeCircuit:
     def test_parametrize_from_random_circuit_process_fidelity(self):
-        qc = random_circuit(6, 12, max_operands=3)
+        qc = random_circuit(6, 12, max_operands=3, seed=7994855845011355715)
         ansatz, initial_params = parametrize_circuit(qc)
         ansatz.assign_parameters(initial_params, inplace=True)
         fidelity = process_fidelity(Operator(ansatz), Operator(qc))
         assert fidelity == pytest.approx(1)
 
     def test_parametrize_from_random_circuit_state_fidelity(self):
-        qc = random_circuit(6, 12, max_operands=3)
+        qc = random_circuit(6, 12, max_operands=3, seed=4692760228210974079)
         ansatz, initial_params = parametrize_circuit(qc)
         ansatz.assign_parameters(initial_params, inplace=True)
         fidelity = state_fidelity(Statevector(ansatz), Statevector(qc))
