@@ -22,8 +22,25 @@ def parametrize_circuit(
     /,
     *,
     parameter_name: str = "theta",
-) -> QuantumCircuit:
-    """Create a parametrized version of a circuit."""
+) -> tuple[QuantumCircuit, list[float]]:
+    """Create a parametrized version of a circuit.
+
+    Given a quantum circuit, constructs another quantum circuit which is identical
+    except that any gates with numerical parameters are replaced by gates (of the same
+    type) with free parameters. The new circuit is returned along with a list containing
+    the original values of the parameters.
+
+    Args:
+        qc: The quantum circuit to parametrize.
+        parameter_name: Name for the :class:`~qiskit.circuit.ParameterVector`
+            representing the free parameters in the returned ansatz circuit.
+
+    TODO add example
+
+    Returns:
+        ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
+        is identical to ``qc``.
+    """
     ansatz = QuantumCircuit(*qc.qregs, *qc.cregs)
     param_vec = ParameterVector(parameter_name)
     initial_params: list[float] = []
