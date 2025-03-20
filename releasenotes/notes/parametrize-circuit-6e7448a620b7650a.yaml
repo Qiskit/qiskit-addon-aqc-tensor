@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Adds the :func:`~.parametrize_circuit` function for generating a parametrized version of a given circuit.
+    In contrast to :func:`~.generate_ansatz_from_circuit`, ``parametrize_circuit`` does not change the types
+    of gates in the circuit. It simply replaces numerical parameters with free parameters.
