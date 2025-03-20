@@ -17,6 +17,7 @@ from __future__ import annotations
 from importlib.metadata import PackageNotFoundError, version
 
 from .ansatz_generation import generate_ansatz_from_circuit
+from .parametrize_circuit import parametrize_circuit
 
 try:
     __version__ = version("qiskit-addon-aqc-tensor")
@@ -27,4 +28,5 @@ except PackageNotFoundError:  # pragma: no cover
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
     "generate_ansatz_from_circuit",
+    "parametrize_circuit",
 ]
