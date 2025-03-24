@@ -11,7 +11,8 @@
 # that they have been altered from the originals.
 
 import numpy as np
-from qiskit.circuit import Parameter, QuantumCircuit, QuantumRegister
+import pytest
+from qiskit.circuit import Parameter, QuantumCircuit, QuantumRegister, CircuitError
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info import Operator, Statevector
 
@@ -60,3 +61,12 @@ class TestParametrizeCircuit:
         ansatz.assign_parameters([0.4, 0.5], inplace=True)
 
         np.testing.assert_allclose(Operator(ansatz), Operator(qc))
+
+    def test_parameter_conflict(self):
+        qubits = QuantumRegister(1)
+        qc = QuantumCircuit(qubits)
+        theta0 = Parameter("theta[0]")
+        qc.ry(theta0, [0])
+        qc.ry(0.1, [0])
+        with pytest.raises(CircuitError, match="conflict"):
+            _ = parametrize_circuit(qc)
