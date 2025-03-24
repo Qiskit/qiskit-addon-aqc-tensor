@@ -38,4 +38,4 @@ jobs:
       - name: Test using tox environment
         shell: bash
         run: |
-          tox -e py,notebook,quimb-only,aer-only --parallel --parallel-no-spinner
+          tox -e py,notebook,quimb-only,aer-only,doctest --parallel --parallel-no-spinner
