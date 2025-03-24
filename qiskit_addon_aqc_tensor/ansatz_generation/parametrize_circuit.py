@@ -12,6 +12,8 @@
 
 """Function for constructing a parameterized version of a circuit."""
 
+from __future__ import annotations
+
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 
 from .from_connectivity import _allocate_parameters
@@ -101,13 +103,13 @@ def parametrize_circuit(
 
        qc = QuantumCircuit(3)
        alpha1 = Parameter("alpha1")
-       alpha2 = Parameter("alpha2") 
+       alpha2 = Parameter("alpha2")
        qc.ry(alpha1, [0])
        qc.rz(0.1, [0])
        qc.ry(alpha2, [1])
        qc.rz(alpha1, [1])
        qc.ry(0.2, [2])
-       qc.rz(0.3, [2]) 
+       qc.rz(0.3, [2])
        ansatz, initial_params = parametrize_circuit(qc)
        ansatz.assign_parameters(
            {
