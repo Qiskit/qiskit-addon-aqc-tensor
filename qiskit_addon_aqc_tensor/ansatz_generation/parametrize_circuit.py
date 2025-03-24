@@ -22,7 +22,7 @@ def parametrize_circuit(
     /,
     *,
     parameter_name: str = "theta",
-) -> tuple[QuantumCircuit, list[float]]:
+) -> tuple[QuantumCircuit, list[float | None]]:
     r"""Create a parametrized version of a circuit.
 
     Given a quantum circuit, constructs another quantum circuit which is identical
@@ -37,7 +37,9 @@ def parametrize_circuit(
 
     Returns:
         ``(ansatz, parameter_values)`` such that ``ansatz.assign_parameters(parameter_values)``
-        is identical to ``qc``.
+        is identical to ``qc`` as long as ``qc`` did not already contain parameters.
+        If ``qc`` already had parameters, then ``parameter_values`` will contain ``None``
+        at the entries corresponding to those parameters.
 
     Example:
     ========
@@ -84,6 +86,38 @@ def parametrize_circuit(
        :context: close-figs
 
        ansatz.assign_parameters(initial_params).draw("mpl")
+
+    If the original circuit already contained parameters, then the returned parameter values
+    will contain ``None`` at the entries corresponding to those parameters, and the preceding
+    code will not work. The following example shows how to recover the original circuit
+    in this case.
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       from qiskit.circuit import Parameter
+
+       qc = QuantumCircuit(3)
+       alpha1 = Parameter("alpha1")
+       alpha2 = Parameter("alpha2") 
+       qc.ry(alpha1, [0])
+       qc.rz(0.1, [0])
+       qc.ry(alpha2, [1])
+       qc.rz(alpha1, [1])
+       qc.ry(0.2, [2])
+       qc.rz(0.3, [2]) 
+       ansatz, initial_params = parametrize_circuit(qc)
+       ansatz.assign_parameters(
+           {
+               param: val
+               for param, val in zip(ansatz.parameters, initial_params)
+               if val is not None
+           },
+           inplace=True,
+       )
+       ansatz.draw("mpl")
     """
     ansatz = QuantumCircuit(*qc.qregs, *qc.cregs)
     param_vec = ParameterVector(parameter_name)
