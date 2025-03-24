@@ -105,4 +105,8 @@ def parametrize_circuit(
                 initial_params.append(original_params[i])
         ansatz.append(operation, inst.qubits, inst.clbits)
 
+    for i, param in enumerate(ansatz.parameters):
+        if param in qc.parameters:
+            initial_params.insert(i, None)
+
     return ansatz, initial_params

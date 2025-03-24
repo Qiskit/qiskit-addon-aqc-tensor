@@ -10,7 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+import numpy as np
 import pytest
+from qiskit.circuit import Parameter, QuantumCircuit, QuantumRegister
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info import Operator, Statevector, process_fidelity, state_fidelity
 
@@ -24,6 +26,7 @@ class TestParametrizeCircuit:
         qc = random_circuit(6, 12, max_operands=3, seed=7994855845011355715)
         ansatz, initial_params = parametrize_circuit(qc)
         ansatz.assign_parameters(initial_params, inplace=True)
+        # TODO test unitary equivalence instead of fidelity
         fidelity = process_fidelity(Operator(ansatz), Operator(qc))
         assert fidelity == pytest.approx(1)
 
@@ -31,5 +34,34 @@ class TestParametrizeCircuit:
         qc = random_circuit(6, 12, max_operands=3, seed=4692760228210974079)
         ansatz, initial_params = parametrize_circuit(qc)
         ansatz.assign_parameters(initial_params, inplace=True)
+        # TODO test state equivalence instead of fidelity
         fidelity = state_fidelity(Statevector(ansatz), Statevector(qc))
         assert fidelity == pytest.approx(1)
+
+    def test_parametrize_circuit_with_parameters(self):
+        qubits = QuantumRegister(3)
+        qc = QuantumCircuit(qubits)
+        alpha1 = Parameter("alpha1")
+        alpha2 = Parameter("alpha2")
+
+        qc.ry(alpha1, [0])
+        qc.rz(0.1, [0])
+        qc.ry(alpha2, [1])
+        qc.rz(alpha1, [1])
+        qc.ry(0.2, [2])
+        qc.rz(0.3, [2])
+
+        ansatz, initial_params = parametrize_circuit(qc)
+        ansatz.assign_parameters(
+            {
+                param: val
+                for param, val in zip(ansatz.parameters, initial_params)
+                if val is not None
+            },
+            inplace=True,
+        )
+
+        qc.assign_parameters([0.4, 0.5], inplace=True)
+        ansatz.assign_parameters([0.4, 0.5], inplace=True)
+
+        np.testing.assert_allclose(Operator(ansatz), Operator(qc))
