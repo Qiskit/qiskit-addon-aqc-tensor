@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-"""Utilities for ansatz generation."""
+"""Utilities for ansatz generation based on two-qubit connectivity."""
 
 from __future__ import annotations
 

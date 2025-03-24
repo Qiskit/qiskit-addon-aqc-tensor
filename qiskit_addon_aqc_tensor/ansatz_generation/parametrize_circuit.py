@@ -14,7 +14,7 @@
 
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 
-from .kak_general import _allocate_parameters
+from .from_connectivity import _allocate_parameters
 
 
 def parametrize_circuit(
