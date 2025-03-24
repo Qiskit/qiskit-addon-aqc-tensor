@@ -78,9 +78,30 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
 
     This is compatible with both `Quimb's MPS simulator
     <https://quimb.readthedocs.io/en/latest/tensor-circuit-mps.html>`__,
-    which eagerly contracts gates, as well as `Quimb's standard method for
+    which eagerly contracts gates by default, as well as `Quimb's standard method for
     circuit simulation
     <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__.
+
+    Example usage:
+
+    .. code-block:: python
+
+       from functools import partial
+       import quimb.tensor
+       from qiskit_addon_aqc_tensor.simulation.quimb import QuimbSimulator
+
+       simulator_settings = QuimbSimulator(
+           partial(
+               quimb.tensor.CircuitMPS,
+               gate_opts={"cutoff": 1e-8},
+           ),
+           autodiff_backend="jax",
+       )
+
+    For additional options, see the API documentation for `quimb.tensor.Circuit
+    <https://quimb.readthedocs.io/en/main/autoapi/quimb/tensor/circuit/index.html#quimb.tensor.circuit.Circuit>`__
+    and `quimb.tensor.CircuitMPS
+    <https://quimb.readthedocs.io/en/main/autoapi/quimb/tensor/circuit/index.html#quimb.tensor.circuit.CircuitMPS>`__.
     """
 
     #: Callable for constructing the Quimb circuit, e.g., :func:`~quimb.tensor.Circuit` or :func:`~quimb.tensor.CircuitMPS`.
