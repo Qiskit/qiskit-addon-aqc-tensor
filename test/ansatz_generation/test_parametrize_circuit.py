@@ -22,16 +22,11 @@ from qiskit_addon_aqc_tensor import parametrize_circuit
 
 
 class TestParametrizeCircuit:
-    def test_parametrize_from_random_circuit_process_fidelity(self):
+    def test_parametrize_from_random_circuit(self):
         qc = random_circuit(6, 12, max_operands=3, seed=7994855845011355715)
         ansatz, initial_params = parametrize_circuit(qc)
         ansatz.assign_parameters(initial_params, inplace=True)
         np.testing.assert_allclose(Operator(ansatz), Operator(qc))
-
-    def test_parametrize_from_random_circuit_state_fidelity(self):
-        qc = random_circuit(6, 12, max_operands=3, seed=4692760228210974079)
-        ansatz, initial_params = parametrize_circuit(qc)
-        ansatz.assign_parameters(initial_params, inplace=True)
         np.testing.assert_allclose(Statevector(ansatz), Statevector(qc))
 
     def test_parametrize_circuit_with_parameters(self):
