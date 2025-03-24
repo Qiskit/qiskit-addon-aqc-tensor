@@ -12,7 +12,7 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import Parameter, QuantumCircuit, QuantumRegister, CircuitError
+from qiskit.circuit import CircuitError, Parameter, QuantumCircuit, QuantumRegister
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info import Operator, Statevector
 
