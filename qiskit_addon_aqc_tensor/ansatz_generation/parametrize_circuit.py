@@ -123,7 +123,7 @@ def parametrize_circuit(
     """
     ansatz = QuantumCircuit(*qc.qregs, *qc.cregs)
     param_vec = ParameterVector(parameter_name)
-    initial_params: list[float] = []
+    initial_params: list[float | None] = []
 
     for inst in qc.data:
         operation = inst.operation
