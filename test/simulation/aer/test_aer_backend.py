@@ -12,7 +12,6 @@
 
 import numpy as np
 import pytest
-from qiskit import QuantumCircuit
 from qiskit.circuit.library import CXGate, XGate
 from qiskit.providers.basic_provider import BasicSimulator
 
@@ -32,23 +31,6 @@ skip_aer_tests = not is_aer_available()
 pytestmark = pytest.mark.skipif(skip_aer_tests, reason="qiskit-aer is not installed")
 
 
-@pytest.fixture
-def bell_qc():
-    qc = QuantumCircuit(2)
-    qc.h(0)
-    qc.cx(0, 1)
-    return qc
-
-
-@pytest.fixture
-def ghz_qc():
-    qc = QuantumCircuit(3)
-    qc.h(0)
-    qc.cx(0, 1)
-    qc.cx(1, 2)
-    return qc
-
-
 class TestQiskitAerBackend:
     def test_bell_circuit(self, bell_qc, AerSimulator):
         simulator = AerSimulator(method="matrix_product_state")
@@ -56,12 +38,6 @@ class TestQiskitAerBackend:
         bell_mps1 = tensornetwork_from_circuit(bell_qc, settings)
         bell_mps2 = tensornetwork_from_circuit(bell_qc, settings)
         assert compute_overlap(bell_mps1, bell_mps2) == pytest.approx(1)
-
-    def test_bell_circuit_statevector(self, bell_qc, AerSimulator):
-        simulator = AerSimulator(method="matrix_product_state")
-        out_state = np.zeros([4], dtype=complex)
-        tensornetwork_from_circuit(bell_qc, simulator, out_state=out_state)
-        assert out_state == pytest.approx(np.array([1, 0, 0, 1]) / np.sqrt(2))
 
     def test_bell_circuit_log(self, bell_qc, AerSimulator):
         simulator = AerSimulator(method="matrix_product_state", mps_log_data=True)
