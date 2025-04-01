@@ -84,7 +84,7 @@ lint = [
     "qiskit-addon-aqc-tensor[style]",
     "mypy==1.15.0",
     "reno>=3.4.0",
-    "pylint==3.3.4",
+    "pylint==3.3.6",
 ]
 docs = [
     "Sphinx>=3.0.0",
