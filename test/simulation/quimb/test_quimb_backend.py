@@ -16,6 +16,7 @@ import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.library import CXGate, RXGate, XXPlusYYGate
 
+from qiskit_addon_aqc_tensor.objective import MaximizeStateFidelity
 from qiskit_addon_aqc_tensor.simulation import (
     compute_overlap,
     tensornetwork_from_circuit,
@@ -114,4 +115,33 @@ class TestQuimbConversion:
         assert (
             e_info.value.args[0]
             == "Parameter cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
+        )
+
+    def test_unspecified_gradient_method(self, quimb):
+        settings = QuimbSimulator(quimb.tensor.CircuitMPS)
+        qc = QuantumCircuit(1)
+        x = Parameter("x")
+        qc.rx(x, 0)
+        with pytest.raises(ValueError) as e_info:
+            MaximizeStateFidelity(None, qc, settings)
+        assert (
+            e_info.value.args[0]
+            == "Gradient method unspecified. Please specify an autodiff_backend for the QuimbSimulator object."
+        )
+
+    def test_recovery_num_parameters_mismatch_error(self):
+        x = Parameter("x")
+        y = Parameter("y")
+        qc1 = QuantumCircuit(1)
+        qc1.rx(1 - x, 0)
+        qc2 = QuantumCircuit(1)
+        qc2.rx(1 - x, 0)
+        qc2.ry(1 - 0.5 * y, 0)
+        circ1, _ = qiskit_ansatz_to_quimb(qc1, [0.5])
+        _, ctx2 = qiskit_ansatz_to_quimb(qc2, [0.5, 0.3])
+        with pytest.raises(ValueError) as e_info:
+            recover_parameters_from_quimb(circ1, ctx2)
+        assert (
+            e_info.value.args[0]
+            == "The length of the mapping in the provided QiskitQuimbConversionContext does not match the number of parametrized gates in the circuit (2 vs. 1)."
         )

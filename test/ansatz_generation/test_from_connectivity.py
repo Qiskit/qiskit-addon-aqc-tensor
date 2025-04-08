@@ -77,7 +77,8 @@ class TestAnsatzGeneration:
     def test_dynamic_circuit(self):
         qc = QuantumCircuit(1, 1)
         qc.measure(0, 0)
-        qc.x(0).c_if(qc.clbits[0], 1)
+        with qc.if_test((qc.clbits[0], True)):
+            qc.x(0)
         with pytest.raises(ValueError) as e_info:
             generate_ansatz_from_circuit(qc)
         assert (

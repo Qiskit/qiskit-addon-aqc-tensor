@@ -59,7 +59,7 @@ In either case, the first step is to clone the AQC-Tensor repository.
 
 .. code:: sh
 
-    git clone git clone git@github.com:Qiskit/qiskit-addon-aqc-tensor.git
+    git clone git@github.com:Qiskit/qiskit-addon-aqc-tensor.git
 
 Next, upgrade pip and enter the repository.
 

@@ -1,7 +1,7 @@
 [![Release](https://img.shields.io/pypi/v/qiskit-addon-aqc-tensor.svg?label=Release)](https://github.com/Qiskit/qiskit-addon-aqc-tensor/releases)
 ![Platform](https://img.shields.io/badge/%F0%9F%92%BB%20Platform-Linux%20%7C%20macOS%20%7C%20Windows-informational)
 [![Python](https://img.shields.io/pypi/pyversions/qiskit-addon-aqc-tensor?label=Python&logo=python)](https://www.python.org/)
-[![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%201.2%20-%20%236133BD?logo=Qiskit)](https://github.com/Qiskit/qiskit)
+[![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%201.3%20-%20%236133BD?logo=Qiskit)](https://github.com/Qiskit/qiskit)
 <br />
 [![Docs (stable)](https://img.shields.io/badge/%F0%9F%93%84%20Docs-stable-blue.svg)](https://qiskit.github.io/qiskit-addon-aqc-tensor/)
 [![License](https://img.shields.io/github/license/Qiskit/qiskit-addon-aqc-tensor?label=License)](LICENSE.txt)
