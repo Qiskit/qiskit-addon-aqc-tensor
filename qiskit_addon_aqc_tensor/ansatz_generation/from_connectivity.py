@@ -145,6 +145,58 @@ def _allocate_parameters(params: ParameterVector, n: int) -> tuple[list[Paramete
     return params[m:], range(m, m + n)
 
 
+class GenericDecomposer:
+    def __init__(self, *, qubits_initially_zero: bool):
+        self.qubits_initially_zero = qubits_initially_zero
+        self.one_qubit_decomposer = OneQubitEulerDecomposer("ZXZ")
+
+    def initialize_qubit(self, q, param_vec, initial_params, free_params, ansatz):
+        params, free_params[q] = _allocate_parameters(param_vec, 2 if self.qubits_initially_zero else 3)
+        initial_params.extend([np.nan] * len(params))
+        if self.qubits_initially_zero:
+            params.insert(0, 0.0)
+        ansatz.append(ZXZ(params), (q,))
+
+    @staticmethod
+    def update_ansatz(q0: int, q1: int, param_vec: ParameterVector, free_params, initial_params, ansatz):
+        params, free_params[q0, q1] = _allocate_parameters(param_vec, 9)
+        initial_params.extend([np.nan] * 9)
+        ansatz.append(KAK(params[0:3]), (q0, q1))
+        ansatz.append(ZXZ(params[3:6]), (q0,))
+        ansatz.append(ZXZ(params[6:9]), (q1,))
+
+    def set_params_from_1q_circuit(self, q: int, single_qc, initial_params, free_params) -> None:
+        mat = Operator(single_qc).data
+        self._set_zxz_params_from_mat(q, mat, initial_params, free_params)
+
+    def _set_zxz_params_from_mat(self, q: int, mat, initial_params, free_params) -> None:
+        # Following the variable convention at
+        # https://docs.quantum.ibm.com/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
+        fp = free_params[q]
+        theta, phi, lamb = self.one_qubit_decomposer.angles(mat)
+        values: tuple[float, ...] = lamb, theta, phi
+        if len(fp) == 2:
+            # Must be initial gate, where the Z rotation has been dropped.
+            # This makes sense if we assume the input state to this ZXZ block
+            # is |0>.
+            values = values[1:]
+        for j, r in zip(fp, values):
+            initial_params[j] = r
+
+    def divorce_ritual(self, q0, q1, couple_qc, fp01, singles, initial_params, free_params):
+        mat = Operator(couple_qc).data
+        d = TwoQubitWeylDecomposition(mat)
+        singles[q0] = [UnitaryGate(d.K1r)]
+        singles[q1] = [UnitaryGate(d.K1l)]
+        initial_params[fp01[0]] = d.a
+        initial_params[fp01[1]] = d.b
+        initial_params[fp01[2]] = d.c
+        self._set_zxz_params_from_mat(q0, d.K2r, initial_params, free_params)
+        self._set_zxz_params_from_mat(q1, d.K2l, initial_params, free_params)
+        free_params[q0] = free_params[q0, q1][3:6]
+        free_params[q1] = free_params[q0, q1][6:9]
+
+
 def _nonidle_qubits(qc: QuantumCircuit, /):
     return {
         qubit
@@ -272,26 +324,12 @@ def generate_ansatz_from_circuit(
     param_vec = ParameterVector(parameter_name)
     initial_params: list[float] = []
 
-    decomposer = OneQubitEulerDecomposer("ZXZ")
+    decomposer = GenericDecomposer(qubits_initially_zero=qubits_initially_zero)
 
     partner = [None] * num_qubits
     singles: list[list[Gate] | None] = [None] * num_qubits
     couples: dict[tuple[int, int], QuantumCircuit] = {}
     free_params: dict[int | tuple[int, int], range] = {}
-
-    def set_zxz_params_from_mat(q: int, mat) -> None:
-        # Following the variable convention at
-        # https://docs.quantum.ibm.com/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
-        theta, phi, lamb = decomposer.angles(mat)
-        fp = free_params[q]
-        values: tuple[float, ...] = lamb, theta, phi
-        if len(fp) == 2:
-            # Must be initial gate, where the Z rotation has been dropped.
-            # This makes sense if we assume the input state to this ZXZ block
-            # is |0>.
-            values = values[1:]
-        for j, r in zip(fp, values):
-            initial_params[j] = r
 
     def perform_separation(q0: int, q1: int):
         if q0 > q1:
@@ -299,28 +337,14 @@ def generate_ansatz_from_circuit(
         partner[q0] = None
         partner[q1] = None
         couple_qc = couples[q0, q1]
-        mat = Operator(couple_qc).data
-        d = TwoQubitWeylDecomposition(mat)
-        singles[q0] = [UnitaryGate(d.K1r)]
-        singles[q1] = [UnitaryGate(d.K1l)]
         fp01 = free_params[q0, q1]
-        initial_params[fp01[0]] = d.a
-        initial_params[fp01[1]] = d.b
-        initial_params[fp01[2]] = d.c
-        set_zxz_params_from_mat(q0, d.K2r)
-        set_zxz_params_from_mat(q1, d.K2l)
+        decomposer.divorce_ritual(q0, q1, couple_qc, fp01, singles, initial_params, free_params)
         del couples[q0, q1]
-        free_params[q0] = free_params[q0, q1][3:6]
-        free_params[q1] = free_params[q0, q1][6:9]
         del free_params[q0, q1]
 
     active_qubits = sorted([qc.find_bit(q)[0] for q in _nonidle_qubits(qc)])
     for q in active_qubits:
-        params, free_params[q] = _allocate_parameters(param_vec, 2 if qubits_initially_zero else 3)
-        initial_params.extend([np.nan] * len(params))
-        if qubits_initially_zero:
-            params.insert(0, 0.0)
-        ansatz.append(ZXZ(params), (q,))
+        decomposer.initialize_qubit(q, param_vec, initial_params, free_params, ansatz)
         singles[q] = []
 
     for inst in qc.data:
@@ -369,11 +393,7 @@ def generate_ansatz_from_circuit(
                 partner[q0] = q1
                 partner[q1] = q0
                 # Update the ansatz
-                params, free_params[q0, q1] = _allocate_parameters(param_vec, 9)
-                initial_params.extend([np.nan] * 9)
-                ansatz.append(KAK(params[0:3]), (q0, q1))
-                ansatz.append(ZXZ(params[3:6]), (q0,))
-                ansatz.append(ZXZ(params[6:9]), (q1,))
+                decomposer.update_ansatz(q0, q1, param_vec, free_params, initial_params, ansatz)
             couple_qc.append(inst.operation, (1, 0) if swapped else (0, 1))
         else:
             raise ValueError(
@@ -392,8 +412,7 @@ def generate_ansatz_from_circuit(
         single_qc = QuantumCircuit(1)
         for op in ops:
             single_qc.append(op, (0,))
-        mat = Operator(single_qc).data
-        set_zxz_params_from_mat(q, mat)
+        decomposer.set_params_from_1q_circuit(q, single_qc, initial_params, free_params)
         del free_params[q]
 
     assert not free_params
