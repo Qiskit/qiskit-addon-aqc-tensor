@@ -151,14 +151,18 @@ class GenericDecomposer:
         self.one_qubit_decomposer = OneQubitEulerDecomposer("ZXZ")
 
     def initialize_qubit(self, q, param_vec, initial_params, free_params, ansatz):
-        params, free_params[q] = _allocate_parameters(param_vec, 2 if self.qubits_initially_zero else 3)
+        params, free_params[q] = _allocate_parameters(
+            param_vec, 2 if self.qubits_initially_zero else 3
+        )
         initial_params.extend([np.nan] * len(params))
         if self.qubits_initially_zero:
             params.insert(0, 0.0)
         ansatz.append(ZXZ(params), (q,))
 
     @staticmethod
-    def update_ansatz(q0: int, q1: int, param_vec: ParameterVector, free_params, initial_params, ansatz):
+    def update_ansatz(
+        q0: int, q1: int, param_vec: ParameterVector, free_params, initial_params, ansatz
+    ):
         params, free_params[q0, q1] = _allocate_parameters(param_vec, 9)
         initial_params.extend([np.nan] * 9)
         ansatz.append(KAK(params[0:3]), (q0, q1))
