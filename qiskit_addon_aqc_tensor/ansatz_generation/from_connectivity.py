@@ -25,6 +25,7 @@ from qiskit.circuit import (
     QuantumCircuit,
 )
 from qiskit.circuit.library import UnitaryGate
+from qiskit.compiler import transpile
 from qiskit.quantum_info import Operator
 from qiskit.synthesis import OneQubitEulerDecomposer, TwoQubitWeylDecomposition
 
@@ -299,6 +300,7 @@ def generate_ansatz_from_circuit(
         partner[q0] = None
         partner[q1] = None
         couple_qc = couples[q0, q1]
+        couple_qc = transpile(couple_qc, basis_gates=["cx", "rx", "ry", "rz"])
         mat = Operator(couple_qc).data
         d = TwoQubitWeylDecomposition(mat)
         singles[q0] = [UnitaryGate(d.K1r)]
