@@ -92,7 +92,7 @@ class TestAnsatzGeneration:
         _, initial_parameters = generate_ansatz_from_circuit(qc)
         assert len(initial_parameters) == 3
 
-    def test_large_circuit_two_qubit_weyl_decomposition_error(self):
+    def test_large_circuit_no_two_qubit_weyl_decomposition_error(self):
         qc = QuantumCircuit(50)
 
         for _ in range(10):
