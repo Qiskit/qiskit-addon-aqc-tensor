@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Sequence
 
 import numpy as np
@@ -26,8 +27,11 @@ from qiskit.circuit import (
 )
 from qiskit.circuit.library import UnitaryGate
 from qiskit.compiler import transpile
+from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Operator
 from qiskit.synthesis import OneQubitEulerDecomposer, TwoQubitWeylDecomposition
+
+logger = logging.getLogger(__name__)
 
 
 class AnsatzBlock(Gate):
@@ -300,9 +304,19 @@ def generate_ansatz_from_circuit(
         partner[q0] = None
         partner[q1] = None
         couple_qc = couples[q0, q1]
-        couple_qc = transpile(couple_qc, basis_gates=["cx", "rx", "ry", "rz"])
         mat = Operator(couple_qc).data
-        d = TwoQubitWeylDecomposition(mat)
+        try:
+            d = TwoQubitWeylDecomposition(mat)
+        except QiskitError as exc:
+            # Try again with the transpiled circuit.  See
+            # https://github.com/Qiskit/qiskit-addon-aqc-tensor/pull/100
+            logger.warning(
+                "M2 diagonalization seems to have failed.  Trying again with transpiled 2-qubit circuit.",
+                exc_info=exc,
+            )
+            couple_qc = transpile(couple_qc, basis_gates=["cx", "rx", "ry", "rz"])
+            mat = Operator(couple_qc).data
+            d = TwoQubitWeylDecomposition(mat)
         singles[q0] = [UnitaryGate(d.K1r)]
         singles[q1] = [UnitaryGate(d.K1l)]
         fp01 = free_params[q0, q1]
