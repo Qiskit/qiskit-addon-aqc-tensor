@@ -91,4 +91,4 @@ If you installed the notebook dependencies, you can get started with AQC-Tensor 
 Platform Support
 ^^^^^^^^^^^^^^^^
 
-We expect this package to work on `any Tier 1 platform supported by Qiskit <https://docs.quantum.ibm.com/start/install#operating-system-support>`__.
+We expect this package to work on `any Tier 1 platform supported by Qiskit <https://quantum.cloud.ibm.com/docs/guides/install-qiskit#operating-system-support>`__.
