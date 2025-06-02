@@ -93,7 +93,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
        simulator_settings = QuimbSimulator(
            partial(
                quimb.tensor.CircuitMPS,
-               gate_opts={"cutoff": 1e-8},
+               cutoff=1e-8,
            ),
            autodiff_backend="jax",
        )
