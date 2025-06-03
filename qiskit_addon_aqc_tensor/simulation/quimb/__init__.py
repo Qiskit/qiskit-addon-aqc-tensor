@@ -264,7 +264,7 @@ def qiskit_ansatz_to_quimb(
                     ) from ex
                 if mapping[index][0] != -1:
                     raise ValueError(
-                        "Parameter cannot be repeated in circuit, else "
+                        f"Parameter {param} cannot be repeated in circuit, else "
                         "quimb will attempt to optimize each instance separately."
                     )
                 mapping[index] = (j, k, m, b)

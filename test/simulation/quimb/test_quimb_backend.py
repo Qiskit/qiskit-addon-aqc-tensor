@@ -109,7 +109,7 @@ class TestQuimbConversion:
             qiskit_ansatz_to_quimb(qc, [np.pi / 2])
         assert (
             e_info.value.args[0]
-            == "Parameter cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
+            == "Parameter x cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
         )
 
     def test_unspecified_gradient_method(self, quimb):
