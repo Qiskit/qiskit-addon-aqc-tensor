@@ -1,0 +1,12 @@
+---
+features:
+  - |
+    The quimb backend now supports evaluating the gradient of
+    multi-parameter gates, as long as the Qiskit gate maps directly to
+    a quimb gate without change of parameters.  Currently,
+    :class:`~qiskit.circuit.library.XXPlusYYGate` is the only
+    multi-parameter gate supported by qiskit-quimb.
+upgrade:
+  - |
+    The quimb backend now requires the following minimum
+    versions: quimb 0.11.0 and qiskit-quimb 0.0.8.
