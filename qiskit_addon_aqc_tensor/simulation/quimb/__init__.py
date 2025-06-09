@@ -210,10 +210,12 @@ class QiskitQuimbConversionContext:
 
 
 def qiskit_ansatz_to_quimb(
-    qc: QuantumCircuit, initial_parameters: Sequence[float], /
+    qc: QuantumCircuit,
+    initial_parameters: Sequence[float],
+    quimb_circuit_factory,
+    /,
 ) -> tuple[quimb.tensor.Circuit, QiskitQuimbConversionContext]:
     """Convert a Qiskit ansatz to a Quimb parametrized circuit."""
-    import quimb.tensor as qtn
     from qiskit_quimb import quimb_gate
 
     qc = qc.decompose(AnsatzBlock)
@@ -222,7 +224,7 @@ def qiskit_ansatz_to_quimb(
             f"{len(initial_parameters)} parameter(s) were passed, but "
             f"the circuit has {qc.num_parameters} parameter(s)."
         )
-    circ = qtn.Circuit(qc.num_qubits)
+    circ = quimb_circuit_factory(qc.num_qubits, convert_eager=False)
     mapping: list[tuple[int, int, float, float]] = [(-1, -1, 0.0, 0.0)] * qc.num_parameters
     j = 0
     parameter_lookup: dict[Parameter, int] = {
@@ -380,7 +382,9 @@ class _QuimbGradientContext:
         import quimb.tensor as qtn
 
         self.quimb_ansatz, self.conversion_ctx = qiskit_ansatz_to_quimb(
-            objective._ansatz, [0.0] * objective._ansatz.num_parameters
+            objective._ansatz,
+            [0.0] * objective._ansatz.num_parameters,
+            settings.quimb_circuit_factory,
         )
         self.tnopt = qtn.TNOptimizer(
             self.quimb_ansatz,
