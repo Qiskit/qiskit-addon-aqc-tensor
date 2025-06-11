@@ -127,6 +127,8 @@ def parametrize_circuit(
 
     for inst in qc.data:
         operation = inst.operation
+        if operation.name == "global_phase":
+            continue
         original_params = operation.params
         fixed_indices = [
             i for i, val in enumerate(original_params) if not isinstance(val, Parameter)

@@ -13,6 +13,7 @@
 import numpy as np
 import pytest
 from qiskit.circuit import CircuitError, Parameter, QuantumCircuit, QuantumRegister
+from qiskit.circuit.library import GlobalPhaseGate
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info import Operator, Statevector
 
@@ -28,6 +29,13 @@ class TestParametrizeCircuit:
         ansatz.assign_parameters(initial_params, inplace=True)
         np.testing.assert_allclose(Operator(ansatz), Operator(qc))
         np.testing.assert_allclose(Statevector(ansatz), Statevector(qc))
+
+    def test_parametrize_ignores_global_phase_gates(self):
+        qc = QuantumCircuit(1)
+        qc.append(GlobalPhaseGate(1.0), ())
+        ansatz, initial_params = parametrize_circuit(qc)
+        assert not ansatz
+        assert not initial_params
 
     def test_parametrize_circuit_with_parameters(self):
         qubits = QuantumRegister(3)
