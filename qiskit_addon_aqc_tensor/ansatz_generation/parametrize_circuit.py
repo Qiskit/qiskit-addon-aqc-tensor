@@ -127,6 +127,7 @@ def parametrize_circuit(
 
     for inst in qc.data:
         operation = inst.operation
+        # Ignore GlobalPhaseGate to avoid introducing a degenerate optimization parameter
         if operation.name == "global_phase":
             continue
         original_params = operation.params
