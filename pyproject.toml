@@ -36,7 +36,7 @@ dependencies = [
 
 [project.optional-dependencies]
 quimb = [
-    "quimb>=1.8.4, <2; python_version < '3.14'",
+    "quimb>=1.11.1, <2; python_version < '3.14'",
     "qiskit-quimb>=0.0.4, <0.1; python_version < '3.14'",
     "networkx>=2.5.1; python_version < '3.14'",
     # The following line silences a warning from cotengra, which is
