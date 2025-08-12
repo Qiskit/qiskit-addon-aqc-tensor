@@ -1,0 +1,12 @@
+---
+fixes:
+  - |
+    This adds a workaround for an issue sometimes encountered when calling :class:`~qiskit.synthesis.TwoQubitWeylDecomposition` inside
+    :func:`.generate_ansatz_from_circuit`. Sometimes an error is thrown despite the input matrix
+    being unitary to numerical precision, and returning :meth:`~qiskit.quantum_info.Operator.is_unitary()`` as ``True``. This is
+    an ongoing issue in qiskit, see `https://github.com/Qiskit/qiskit/issues/4159` for more details.
+
+    With this workaround, any time the error is encountered, it will retry by transpiling the two-qubit circuit (from which the
+    matrix is derived) prior to passing the matrix to :class:`~qiskit.synthesis.TwoQubitWeylDecomposition`. It should
+    be noted that this is does not fix the root issue, and is not guaranteed to always work, but has
+    been observed to work for some instances.
