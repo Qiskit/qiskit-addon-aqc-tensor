@@ -65,6 +65,8 @@ def _quimb_factory_factory(name, autodiff_backend):
 _simulator_factories = []
 if is_quimb_available():
     _simulator_factories.append(_quimb_factory_factory("CircuitMPS", "explicit"))
+    _simulator_factories.append(_quimb_factory_factory("CircuitPermMPS", "explicit"))
+    _simulator_factories.append(_quimb_factory_factory("CircuitPermMPS", "jax"))
     _simulator_factories.append(_quimb_factory_factory("Circuit", "jax"))
     _simulator_factories.append(_quimb_factory_factory("Circuit", "autograd"))
 if is_aer_available():
