@@ -36,8 +36,8 @@ dependencies = [
 
 [project.optional-dependencies]
 quimb = [
-    "quimb>=1.8.4, <2; python_version < '3.14'",
-    "qiskit-quimb>=0.0.4, <0.1; python_version < '3.14'",
+    "quimb>=1.11.0, <2; python_version < '3.14'",
+    "qiskit-quimb>=0.0.9, <0.1; python_version < '3.14'",
     "networkx>=2.3; python_version < '3.14'",
     # The following line silences a warning from cotengra, which is
     # a dependency of quimb.  We install kahypar only on platforms
@@ -77,14 +77,14 @@ nbtest = [
 style = [
     "autoflake==2.3.1",
     "black[jupyter]~=25.1",
-    "ruff==0.11.2",
+    "ruff==0.12.11",
     "nbqa>=1.6.0",
 ]
 lint = [
     "qiskit-addon-aqc-tensor[style]",
-    "mypy==1.15.0",
+    "mypy==1.17.1",
     "reno>=3.4.0",
-    "pylint==3.3.6",
+    "pylint==3.3.8",
 ]
 docs = [
     "Sphinx>=3.0.0",

@@ -93,7 +93,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
        simulator_settings = QuimbSimulator(
            partial(
                quimb.tensor.CircuitMPS,
-               gate_opts={"cutoff": 1e-8},
+               cutoff=1e-8,
            ),
            autodiff_backend="jax",
        )
@@ -204,7 +204,7 @@ def apply_circuit_to_state(
 class QiskitQuimbConversionContext:
     """Contains information about Qiskit-to-Quimb conversion, necessary to recover Qiskit parameters."""
 
-    def __init__(self, mapping: list[tuple[int, float, float]], /):
+    def __init__(self, mapping: list[tuple[int, int, float, float]], /):
         """Initialize.  Should not be called by users."""
         self._mapping = mapping
 
@@ -223,7 +223,7 @@ def qiskit_ansatz_to_quimb(
             f"the circuit has {qc.num_parameters} parameter(s)."
         )
     circ = qtn.Circuit(qc.num_qubits)
-    mapping: list[tuple[int, float, float]] = [(-1, 0.0, 0.0)] * qc.num_parameters
+    mapping: list[tuple[int, int, float, float]] = [(-1, -1, 0.0, 0.0)] * qc.num_parameters
     j = 0
     parameter_lookup: dict[Parameter, int] = {
         param: index for index, param in enumerate(qc.parameters)
@@ -233,45 +233,43 @@ def qiskit_ansatz_to_quimb(
         qubits = [qc.find_bit(qubit)[0] for qubit in instruction.qubits]
         if any(isinstance(p, ParameterExpression) for p in op.params):
             # The current instruction should become a quimb parametrized gate.
-            # First, a sanity check.
-            if len(op.params) != 1:
-                raise ValueError(
-                    "This code is not designed to support parametrized gates "
-                    "with multiple parameters."
-                )
-            expr = op.params[0]
-            # Extract the parameter
-            if len(expr.parameters) != 1:
-                raise ValueError("Expression cannot contain more than one Parameter")
-            param = next(iter(expr.parameters))
-            # Back out the expression.  Make sure it is linear; otherwise we
-            # don't know how to invert it, and we need to do this later when
-            # converting back to Qiskit parameters.
-            m = expr.gradient(param)
-            if isinstance(m, ParameterExpression):
-                raise ValueError(
-                    "The Quimb backend currently requires that each ParameterExpression "
-                    f"must be in the form mx + b (not {expr}).  Otherwise, the backend is unable "
-                    "to recover the parameter."
-                )
-            b = expr.bind({param: 0}).numeric()
+            #
             # Create an equivalent operation that is not parametrized
             fixed_op = deepcopy(op)
-            try:
-                index = parameter_lookup[param]
-            except KeyError as ex:  # pragma: no cover
-                raise RuntimeError(
-                    "Unexpected error: Parameter of operation is not listed "
-                    "among the circuit's parameters."
-                ) from ex
-            if mapping[index][0] != -1:
-                raise ValueError(
-                    "Parameter cannot be repeated in circuit, else "
-                    "quimb will attempt to optimize each instance separately."
-                )
-            mapping[index] = (j, m, b)
-            j = j + 1
-            fixed_op.params[0] = expr.bind({param: initial_parameters[index]}).numeric()
+            # Inspect and process parameters
+            for k, expr in enumerate(op.params):
+                if not isinstance(expr, ParameterExpression):
+                    continue
+                # Extract the parameter from the ParameterExpression
+                if len(expr.parameters) != 1:
+                    raise ValueError("Each expression cannot contain more than one Parameter")
+                param = next(iter(expr.parameters))
+                # Back out the expression.  Make sure it is linear; otherwise we
+                # don't know how to invert it, and we need to do this later when
+                # converting back to Qiskit parameters.
+                m = expr.gradient(param)
+                if isinstance(m, ParameterExpression):
+                    raise ValueError(
+                        "The Quimb backend currently requires that each ParameterExpression "
+                        f"must be in the form mx + b (not {expr}).  Otherwise, the backend is unable "
+                        "to recover the parameter."
+                    )
+                b = expr.bind({param: 0}).numeric()
+                try:
+                    index = parameter_lookup[param]
+                except KeyError as ex:  # pragma: no cover
+                    raise RuntimeError(
+                        "Unexpected error: Parameter of operation is not listed "
+                        "among the circuit's parameters."
+                    ) from ex
+                if mapping[index][0] != -1:
+                    raise ValueError(
+                        f"Parameter {param} cannot be repeated in circuit, else "
+                        "quimb will attempt to optimize each instance separately."
+                    )
+                mapping[index] = (j, k, m, b)
+                j = j + 1
+                fixed_op.params[k] = expr.bind({param: initial_parameters[index]}).numeric()
             # Convert to a quimb gate
             fixed_quimb_gate = quimb_gate(fixed_op, qubits, parametrize=True)
             # Append it to the quimb circuit
@@ -283,7 +281,7 @@ def qiskit_ansatz_to_quimb(
                 circ.apply_gate(quimb_gate_)
         else:  # pragma: no cover
             raise ValueError("A parameter in the circuit has an unexpected type.")
-    for j, _, _ in mapping:
+    for j, _, _, _ in mapping:
         if j == -1:  # pragma: no cover
             # NOTE: There seems to be no obvious way to trigger this error.
             # Even the following snippet results in the parameter being removed
@@ -314,7 +312,7 @@ def recover_parameters_from_quimb(
         )
     # `(y - b) / m` is the inversion of the parameter expression, which we
     # assumed above to be in the form mx + b.
-    return [(float(quimb_parametrized_gates[j].params[0]) - b) / m for (j, m, b) in mapping]
+    return [(float(quimb_parametrized_gates[j].params[k]) - b) / m for (j, k, m, b) in mapping]
 
 
 @dispatch
@@ -402,7 +400,7 @@ def _compute_objective_and_gradient(
 
     # Convert parameters qiskit -> quimb (evaluate parameter expressions)
     quimb_parameter_values = np.zeros(len(mapping))
-    for i, (j, m, b) in enumerate(mapping):
+    for i, (j, _, m, b) in enumerate(mapping):
         quimb_parameter_values[j] = m * qiskit_parameter_values[i] + b
 
     # Evaluate objective value and gradient using quimb
@@ -410,7 +408,7 @@ def _compute_objective_and_gradient(
 
     # Convert gradient quimb -> qiskit (divide by derivative of parameter expressions)
     qiskit_gradient = np.zeros(len(mapping))
-    for i, (j, m, _) in enumerate(mapping):
+    for i, (j, _, m, _) in enumerate(mapping):
         qiskit_gradient[i] = m * quimb_gradient[j]
 
     return val, qiskit_gradient
