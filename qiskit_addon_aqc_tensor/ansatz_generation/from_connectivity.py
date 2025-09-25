@@ -313,8 +313,11 @@ def generate_ansatz_from_circuit(
             # Try again with the transpiled circuit.  See
             # https://github.com/Qiskit/qiskit-addon-aqc-tensor/pull/100
             logger.warning(
-                "M2 diagonalization seems to have failed.  Trying again with transpiled 2-qubit circuit.",
+                "M2 diagonalization has failed with the following non-fatal exception:",
                 exc_info=exc,
+            )
+            logger.warning(
+                "Trying M2 diagonalization again with transpiled 2-qubit circuit.",
             )
             couple_qc = transpile(couple_qc, basis_gates=["cx", "rx", "ry", "rz"])
             mat = Operator(couple_qc).data
