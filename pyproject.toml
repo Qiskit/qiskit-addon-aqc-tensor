@@ -37,7 +37,7 @@ dependencies = [
 [project.optional-dependencies]
 quimb = [
     "quimb>=1.11.0, <2; python_version < '3.14'",
-    "qiskit-quimb>=0.0.8, <0.1; python_version < '3.14'",
+    "qiskit-quimb>=0.0.9, <0.1; python_version < '3.14'",
     "networkx>=2.3; python_version < '3.14'",
     # The following line silences a warning from cotengra, which is
     # a dependency of quimb.  We install kahypar only on platforms
