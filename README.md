@@ -25,7 +25,7 @@
 
 ### About
 
-[Qiskit addons](https://docs.quantum.ibm.com/guides/addons) are a collection of modular tools for building utility-scale workloads powered by Qiskit.
+[Qiskit addons](https://quantum.cloud.ibm.com/docs/guides/addons) are a collection of modular tools for building utility-scale workloads powered by Qiskit.
 
 This addon enables a Qiskit user to perform approximate quantum compilation using tensor networks,
 a technique that was introduced in [arXiv:2301.08609](https://arxiv.org/abs/2301.08609).

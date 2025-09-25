@@ -288,7 +288,7 @@ def generate_ansatz_from_circuit(
 
     def set_zxz_params_from_mat(q: int, mat) -> None:
         # Following the variable convention at
-        # https://docs.quantum.ibm.com/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
+        # https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
         theta, phi, lamb = decomposer.angles(mat)
         fp = free_params[q]
         values: tuple[float, ...] = lamb, theta, phi
