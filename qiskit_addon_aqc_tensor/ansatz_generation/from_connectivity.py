@@ -33,7 +33,7 @@ from qiskit.synthesis import OneQubitEulerDecomposer, TwoQubitWeylDecomposition
 
 logger = logging.getLogger(__name__)
 # We'd like the user to actually see warnings from this module by default
-logging.getLogger().setLevel(logging.WARNING)
+logger.setLevel(logging.WARNING)
 
 
 class AnsatzBlock(Gate):
