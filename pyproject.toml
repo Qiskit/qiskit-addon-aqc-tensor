@@ -100,7 +100,7 @@ notebook-dependencies = [
     "qiskit-addon-aqc-tensor[aer,quimb-jax]",
     "qiskit-addon-utils>=0.1.0",
     "qiskit-ibm-runtime>=0.24.0",
-    "matplotlib>=3.3.4",
+    "matplotlib>=3.9.4",
     "ipywidgets>=7.5.1",
     "pylatexenc>=2.0",
 ]
