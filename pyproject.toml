@@ -78,14 +78,14 @@ nbtest = [
 style = [
     "autoflake==2.3.1",
     "black[jupyter]~=25.1",
-    "ruff==0.12.11",
+    "ruff==0.14.10",
     "nbqa>=1.6.0",
 ]
 lint = [
     "qiskit-addon-aqc-tensor[style]",
-    "mypy==1.18.2",
+    "mypy==1.19.1",
     "reno>=3.4.0",
-    "pylint==3.3.8",
+    "pylint==3.3.9",
 ]
 docs = [
     "Sphinx>=3.0.0",
@@ -101,7 +101,7 @@ notebook-dependencies = [
     "qiskit-addon-aqc-tensor[aer,quimb-jax]",
     "qiskit-addon-utils>=0.1.0",
     "qiskit-ibm-runtime>=0.24.0",
-    "matplotlib>=3.3.4",
+    "matplotlib>=3.9.4",
     "ipywidgets>=7.5.1",
     "pylatexenc>=2.0",
 ]
