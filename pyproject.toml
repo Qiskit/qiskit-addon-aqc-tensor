@@ -62,7 +62,7 @@ dev = [
     "qiskit-addon-aqc-tensor[test,nbtest,lint]",
 ]
 basetest = [
-    "pytest>=7.0.0",
+    "pytest>=9.0.0",
     "pytest-randomly>=1.2.0",
 ]
 test = [
