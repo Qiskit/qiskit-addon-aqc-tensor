@@ -12,6 +12,7 @@
 
 """Quimb as a tensor network backend."""
 
+# ruff: noqa: F811
 from __future__ import annotations
 
 import logging
@@ -19,7 +20,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence, Union
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -27,7 +28,7 @@ from qiskit.circuit import Gate, Parameter, ParameterExpression, QuantumCircuit
 from wrapt import register_post_import_hook
 
 from ...ansatz_generation import AnsatzBlock
-from ...objective import MaximizeStateFidelity
+from ...objective import MaximizeStateFidelity, MaximizeUnitaryFidelity
 from ..abstract import TensorNetworkSimulationSettings
 from ..explicit_gradient import (
     compute_gradient_of_tensornetwork_overlap,
@@ -391,7 +392,7 @@ class _QuimbGradientContext:
 
 @dispatch
 def _compute_objective_and_gradient(
-    _: MaximizeStateFidelity,
+    _: Union[MaximizeStateFidelity, MaximizeUnitaryFidelity],
     __: QuimbSimulator,
     preprocess_info: _QuimbGradientContext,
     qiskit_parameter_values: np.ndarray,
@@ -419,7 +420,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
     """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
 
     - ``loss_fn``
-    - ``loss_kwargs``
+    - ``loss_constants``
     """
     import quimb.tensor as qtn
 
@@ -428,7 +429,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
         target = target.psi
     return {
         "loss_fn": maximize_state_fidelity_loss_function,
-        "loss_kwargs": {"target": target},
+        "loss_constants": {"target": target},
     }
 
 
@@ -447,6 +448,40 @@ def maximize_state_fidelity_loss_function(
     # we use `autoray.do` to allow arbitrary autodiff backends
     fidelity = ar.do("abs", overlap) ** 2
     return 1 - fidelity
+
+
+@dispatch
+def tnoptimizer_objective_kwargs(objective: MaximizeUnitaryFidelity, /) -> dict[str, Any]:
+    """Return keyword arguments for use with :func:`~quimb.tensor.TNOptimizer`.
+
+    - ``loss_fn``
+    - ``loss_constants``
+    """
+    import quimb.tensor as qtn
+
+    target = objective.target
+    if isinstance(target, qtn.Circuit):
+        target = target.get_uni()
+    return {
+        "loss_fn": maximize_process_fidelity_loss_fn,
+        "loss_constants": {"target": target},
+    }
+
+
+def maximize_process_fidelity_loss_fn(
+    circ: quimb.tensor.Circuit,
+    /,
+    *,
+    target: quimb.tensor.TensorNetworkGenVector,
+    optimize="auto-hq",
+):
+    import autoray as ar
+
+    hilbert_schmidt_inner_product = (
+        ar.do("abs", (circ.get_uni().H & target).contract(all, optimize=optimize))
+        / 2.0**target.nsites
+    )
+    return 1 - hilbert_schmidt_inner_product
 
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
