@@ -9,4 +9,4 @@ features:
 upgrade:
   - |
     The quimb backend now requires the following minimum
-    versions: quimb 0.11.0 and qiskit-quimb 0.0.8.
+    versions: quimb 0.11.0 and qiskit-quimb 0.0.9.
