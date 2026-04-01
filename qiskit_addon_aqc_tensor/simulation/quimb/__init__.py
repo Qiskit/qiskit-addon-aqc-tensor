@@ -15,11 +15,12 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
