@@ -45,7 +45,7 @@ Upgrade pip and install the AQC-Tensor package.  To meaningfully use the package
 .. code:: sh
 
     pip install --upgrade pip
-    pip install qiskit-addon-aqc-tensor[quimb-jax]
+    pip install 'qiskit-addon-aqc-tensor[quimb-jax]'
 
 
 .. _Option 2:
