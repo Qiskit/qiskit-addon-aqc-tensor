@@ -29,8 +29,9 @@ and is thus agnostic to the tensor-network backend used.
 from __future__ import annotations
 
 import copy
+from collections.abc import Sequence
 from functools import partial
-from typing import Callable, Sequence
+from typing import Callable
 
 import numpy as np
 from qiskit.circuit import (
@@ -331,6 +332,6 @@ def compute_gradient_of_tensornetwork_overlap(
 
 
 __all__ = [
-    "preprocess_circuit_for_backtracking",
     "compute_gradient_of_tensornetwork_overlap",
+    "preprocess_circuit_for_backtracking",
 ]
