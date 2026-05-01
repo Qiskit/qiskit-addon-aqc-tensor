@@ -31,7 +31,7 @@ dependencies = [
     "plum-dispatch>=2.4.1",
     "wrapt>=1.13.3",
     "numpy>=1.23.0",
-    "scipy>=1.11.0",
+    "scipy>=1.13.1",
     "qiskit>=1.3.0, <3",
 ]
 
