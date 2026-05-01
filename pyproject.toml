@@ -64,7 +64,7 @@ dev = [
 ]
 basetest = [
     "pytest>=7.0.0",
-    "pytest-randomly>=1.2.0",
+    "pytest-randomly>=4.0.1",
 ]
 test = [
     "qiskit-addon-aqc-tensor[basetest]",
