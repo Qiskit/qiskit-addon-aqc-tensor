@@ -3,7 +3,7 @@ AQC-Tensor Qiskit addon
 #######################
 
 
-This addon enables a Qiskit user to perform approximate quantum compilation by using tensor networks,
+This addon lets a Qiskit user perform approximate quantum compilation by using tensor networks,
 a technique that was introduced in `arXiv:2301.08609 <https://arxiv.org/abs/2301.08609>`__.
 
 Specifically, with this package you can compile the *initial portion* of a circuit into a nearly equivalent approximation of that circuit, but with fewer layers.
