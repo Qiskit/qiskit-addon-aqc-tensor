@@ -1,9 +1,9 @@
-#######################
-AQC-Tensor Qiskit addon
-#######################
+#################################################################
+Approximate quantum compilation with tensor networks (AQC-Tensor)
+#################################################################
 
 
-With the ACQ-Tensor addon, you can perform approximate quantum compilation by using tensor networks,
+With the AQC-Tensor addon, you can perform approximate quantum compilation by using tensor networks,
 a technique that was introduced in `arXiv:2301.08609 <https://arxiv.org/abs/2301.08609>`__.
 
 Specifically, with this package you can compile the *initial portion* of a circuit into a nearly equivalent approximation of that circuit, but with fewer layers.
@@ -20,8 +20,6 @@ It has been tested primarily on Trotter circuits to date.  It might, however, be
 Developer guide
 ---------------
 
-The source code for this package is available `on GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>`__.
-
 The developer guide is located at `CONTRIBUTING.md <https://github.com/Qiskit/qiskit-addon-aqc-tensor/blob/main/CONTRIBUTING.md>`__ in the root of this project's repository.
 
 Citing this project
@@ -31,17 +29,3 @@ If you use this package in your research, use the ``CITATON.bib`` file in this p
 
 .. literalinclude:: ../CITATION.bib
    :language: bibtex
-
-Contents
---------
-.. toctree::
-  :maxdepth: 1
-
-   Documentation Home <self>
-   Installation Instructions <install>
-   Tutorials <tutorials/index>
-   Explanatory Material <explanation/index>
-   API Reference <apidocs/index>
-   How-To Guides <how-tos/index>
-   GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
-   Release Notes <release-notes>
