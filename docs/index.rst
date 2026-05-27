@@ -29,3 +29,18 @@ If you use this package in your research, use the ``CITATON.bib`` file in this p
 
 .. literalinclude:: ../CITATION.bib
    :language: bibtex
+
+
+Contents
+--------
+.. toctree::
+  :hidden:
+
+   Documentation Home <self>
+   Installation Instructions <install>
+   Tutorials <tutorials/index>
+   Explanatory Material <explanation/index>
+   API Reference <apidocs/index>
+   How-To Guides <how-tos/index>
+   GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
+   Release Notes <release-notes>
