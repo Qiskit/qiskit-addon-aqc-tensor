@@ -38,7 +38,6 @@ If you use this package in your research, use the ``CITATON.bib`` file in this p
    Installation instructions <install>
    Guides <guides/index>
    GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
-   Release notes <release-notes>
 
 .. toctree::
   :hidden:
@@ -51,3 +50,4 @@ If you use this package in your research, use the ``CITATON.bib`` file in this p
   :caption: API reference
 
    Python API reference <apidocs/index>
+   Release notes <release-notes>
