@@ -68,7 +68,7 @@ basetest = [
 ]
 test = [
     "qiskit-addon-aqc-tensor[basetest]",
-    "pytest-subtests>=0.11.0",
+    "pytest-subtests>=0.15.0",
     "qiskit-addon-utils>=0.1.0",
 ]
 nbtest = [
