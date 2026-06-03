@@ -37,11 +37,20 @@ Contents
 .. toctree::
   :maxdepth: 1
 
-   Documentation Home <self>
-   Installation Instructions <install>
-   Tutorials <tutorials/index>
-   Explanatory Material <explanation/index>
-   API Reference <apidocs/index>
-   How-To Guides <how-tos/index>
+   Home <self>
+   Installation instructions <install>
+   Guides <guides/index>
    GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
    Release Notes <release-notes>
+
+.. toctree::
+  :maxdepth: 1
+  :caption: Tutorials
+
+   Approximate quantum compilation for time evolution circuits <https://quantum.cloud.ibm.com/docs/en/tutorials/approximate-quantum-compilation-for-time-evolution>
+
+.. toctree::
+  :maxdepth: 1
+  :caption: API Reference
+
+   Python API Reference <apidocs/index>
