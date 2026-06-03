@@ -57,7 +57,7 @@ quimb-all = [
     "qiskit-addon-aqc-tensor[quimb-autograd,quimb-jax]",
 ]
 aer = [
-    "qiskit-aer>=0.14.2",
+    "qiskit-aer>=0.17.2",
 ]
 dev = [
     "qiskit-addon-aqc-tensor[test,nbtest,lint]",
