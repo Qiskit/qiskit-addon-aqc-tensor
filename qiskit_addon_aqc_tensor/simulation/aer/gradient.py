@@ -12,8 +12,6 @@
 r"""Gradient implementation for Aer backend."""
 from __future__ import annotations
 
-from typing import Union
-
 import numpy as np
 from plum import dispatch
 from qiskit.circuit import (
@@ -34,7 +32,7 @@ from .simulation import AerSimulator, QiskitAerSimulationSettings
 
 
 @dispatch
-def _preprocess_for_gradient(objective, settings: Union[QiskitAerSimulationSettings, AerSimulator]):
+def _preprocess_for_gradient(objective, settings: QiskitAerSimulationSettings | AerSimulator):
     if objective._ansatz is not None:
         ansatz_num_qubits = objective._ansatz.num_qubits
         target_num_qubits = len(objective._target_tensornetwork.gamma)
@@ -53,7 +51,7 @@ def _preprocess_for_gradient(objective, settings: Union[QiskitAerSimulationSetti
 @dispatch
 def _compute_objective_and_gradient(
     objective: MaximizeStateFidelity,
-    settings: Union[QiskitAerSimulationSettings, AerSimulator],
+    settings: QiskitAerSimulationSettings | AerSimulator,
     preprocess_info,
     x: np.ndarray,
 ) -> tuple[float, np.ndarray]:
