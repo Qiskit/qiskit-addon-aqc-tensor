@@ -11,11 +11,12 @@
 # that they have been altered from the originals.
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-"""Utilities for ansatz generation."""
+"""Utilities for ansatz generation based on two-qubit connectivity."""
 
 from __future__ import annotations
 
-from typing import Sequence
+import logging
+from collections.abc import Sequence
 
 import numpy as np
 from qiskit.circuit import (
@@ -25,8 +26,14 @@ from qiskit.circuit import (
     QuantumCircuit,
 )
 from qiskit.circuit.library import UnitaryGate
+from qiskit.compiler import transpile
+from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Operator
 from qiskit.synthesis import OneQubitEulerDecomposer, TwoQubitWeylDecomposition
+
+logger = logging.getLogger(__name__)
+# We'd like the user to actually see warnings from this module by default
+logger.setLevel(logging.WARNING)
 
 
 class AnsatzBlock(Gate):
@@ -281,7 +288,7 @@ def generate_ansatz_from_circuit(
 
     def set_zxz_params_from_mat(q: int, mat) -> None:
         # Following the variable convention at
-        # https://docs.quantum.ibm.com/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
+        # https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
         theta, phi, lamb = decomposer.angles(mat)
         fp = free_params[q]
         values: tuple[float, ...] = lamb, theta, phi
@@ -300,7 +307,21 @@ def generate_ansatz_from_circuit(
         partner[q1] = None
         couple_qc = couples[q0, q1]
         mat = Operator(couple_qc).data
-        d = TwoQubitWeylDecomposition(mat)
+        try:
+            d = TwoQubitWeylDecomposition(mat)
+        except QiskitError as exc:
+            # Try again with the transpiled circuit.  See
+            # https://github.com/Qiskit/qiskit-addon-aqc-tensor/pull/100
+            logger.warning(
+                "M2 diagonalization has failed with the following non-fatal exception:",
+                exc_info=exc,
+            )
+            logger.warning(
+                "Trying M2 diagonalization again with transpiled 2-qubit circuit.",
+            )
+            couple_qc = transpile(couple_qc, basis_gates=["cx", "rx", "ry", "rz"])
+            mat = Operator(couple_qc).data
+            d = TwoQubitWeylDecomposition(mat)
         singles[q0] = [UnitaryGate(d.K1r)]
         singles[q1] = [UnitaryGate(d.K1l)]
         fp01 = free_params[q0, q1]
@@ -403,10 +424,10 @@ def generate_ansatz_from_circuit(
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
-    "generate_ansatz_from_circuit",
+    "KAK",
+    "ZXZ",
     "AnsatzBlock",
     "OneQubitAnsatzBlock",
     "TwoQubitAnsatzBlock",
-    "ZXZ",
-    "KAK",
+    "generate_ansatz_from_circuit",
 ]

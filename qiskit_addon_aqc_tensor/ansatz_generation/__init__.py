@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2024.
+# (C) Copyright IBM 2025.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,22 +10,25 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Approximate Quantum Compiling using Tensor Networks."""
+"""Tools for generating ansatz circuits."""
 
-from __future__ import annotations
-
-from importlib.metadata import PackageNotFoundError, version
-
-from .ansatz_generation import generate_ansatz_from_circuit, parametrize_circuit
-
-try:
-    __version__ = version("qiskit-addon-aqc-tensor")
-except PackageNotFoundError:  # pragma: no cover
-    # Package is not installed
-    pass
+from .from_connectivity import (
+    KAK,
+    ZXZ,
+    AnsatzBlock,
+    OneQubitAnsatzBlock,
+    TwoQubitAnsatzBlock,
+    generate_ansatz_from_circuit,
+)
+from .parametrize_circuit import parametrize_circuit
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
+    "KAK",
+    "ZXZ",
+    "AnsatzBlock",
+    "OneQubitAnsatzBlock",
+    "TwoQubitAnsatzBlock",
     "generate_ansatz_from_circuit",
     "parametrize_circuit",
 ]

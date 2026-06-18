@@ -15,10 +15,11 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Callable, Optional, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -157,10 +158,10 @@ def _aer_mps_from_circuit(
 @dispatch
 def tensornetwork_from_circuit(
     qc: QuantumCircuit,
-    settings: Union[QiskitAerSimulationSettings, AerSimulator],
+    settings: QiskitAerSimulationSettings | AerSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
+    out_state: np.ndarray | None = None,
 ) -> QiskitAerMPS:
     return _aer_mps_from_circuit(qc, settings, out_state=out_state)
 
@@ -189,10 +190,10 @@ def _apply_two_qubit_gate_inplace(
     gate: Gate,
     q0: int,
     q1: int,
-    settings: Union[QiskitAerSimulationSettings, AerSimulator],
+    settings: QiskitAerSimulationSettings | AerSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
+    out_state: np.ndarray | None = None,
 ) -> None:
     num_qubits = len(psi.gamma)
     qc = QuantumCircuit(num_qubits)
@@ -208,10 +209,10 @@ def _apply_two_qubit_gate_inplace(
 def apply_circuit_to_state(
     qc: QuantumCircuit,
     psi: QiskitAerMPS,
-    settings: Union[QiskitAerSimulationSettings, AerSimulator],
+    settings: QiskitAerSimulationSettings | AerSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
+    out_state: np.ndarray | None = None,
 ) -> QiskitAerMPS:
     # Note, the order of operations is crucial. We compose the circuit after (!)
     # invocation of set_matrix_product_state().

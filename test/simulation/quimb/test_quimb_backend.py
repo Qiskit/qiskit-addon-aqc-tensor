@@ -74,15 +74,10 @@ class TestQuimbConversion:
             == "1 parameter(s) were passed, but the circuit has 0 parameter(s)."
         )
 
-    def test_multiple_parameter_gate_failure_message(self):
+    def test_multiple_parameter_gate(self):
         qc = QuantumCircuit(2)
         qc.append(XXPlusYYGate(Parameter("x")), (0, 1))
-        with pytest.raises(ValueError) as e_info:
-            qiskit_ansatz_to_quimb(qc, [np.pi / 2])
-        assert (
-            e_info.value.args[0]
-            == "This code is not designed to support parametrized gates with multiple parameters."
-        )
+        qiskit_ansatz_to_quimb(qc, [np.pi / 2])
 
     def test_parameterexpression_multiple_parameters_failure_message(self):
         qc = QuantumCircuit(1)
@@ -92,7 +87,7 @@ class TestQuimbConversion:
         qc.ry(x - y, 0)
         with pytest.raises(ValueError) as e_info:
             qiskit_ansatz_to_quimb(qc, [np.pi / 2, np.pi / 4])
-        assert e_info.value.args[0] == "Expression cannot contain more than one Parameter"
+        assert e_info.value.args[0] == "Each expression cannot contain more than one Parameter"
 
     def test_nonlinear_parameterexpression_failure_message(self):
         qc = QuantumCircuit(1)
@@ -114,7 +109,7 @@ class TestQuimbConversion:
             qiskit_ansatz_to_quimb(qc, [np.pi / 2])
         assert (
             e_info.value.args[0]
-            == "Parameter cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
+            == "Parameter x cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
         )
 
     def test_unspecified_gradient_method(self, quimb):

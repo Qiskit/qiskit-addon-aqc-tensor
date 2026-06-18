@@ -20,3 +20,4 @@ Ansatz generation (:mod:`qiskit_addon_aqc_tensor.ansatz_generation`)
     KAK
 
 .. autofunction:: generate_ansatz_from_circuit
+.. autofunction:: parametrize_circuit

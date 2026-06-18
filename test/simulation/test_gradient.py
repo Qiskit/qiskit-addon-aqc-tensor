@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 from qiskit import QuantumCircuit, transpile
 from qiskit.circuit import Parameter
-from qiskit.circuit.library import efficient_su2, n_local
+from qiskit.circuit.library import XXPlusYYGate, efficient_su2, n_local
 
 from qiskit_addon_aqc_tensor.objective import MaximizeStateFidelity
 from qiskit_addon_aqc_tensor.simulation import (
@@ -76,7 +76,7 @@ def _generate_random_ansatz(num_qubits: int):
         inplace=True,
         copy=False,
     )
-    return transpile(qc, basis_gates=_basis_gates(), optimization_level=1)
+    return qc
 
 
 def _get_random_thetas(num_parameters: int):
@@ -99,8 +99,18 @@ def _random_unentangled_circuit(num_qubits: int) -> QuantumCircuit:
 
 @pytest.mark.parametrize("num_qubits", [4])
 def test_mps_gradient_of_random_circuit(num_qubits: int, available_backend_fixture):
-    qc = _generate_random_ansatz(num_qubits)
     settings = available_backend_fixture
+    backend_name = type(settings).__name__
+    explicit_gradient = "Aer" in backend_name or (
+        "Quimb" in backend_name and settings.autodiff_backend == "explicit"
+    )
+    qc = _generate_random_ansatz(num_qubits)
+    if explicit_gradient:
+        # Compile to basis gates used by explicit gradient code
+        qc = transpile(qc, basis_gates=_basis_gates(), optimization_level=1)
+    else:
+        # Throw in a multiparameter gate
+        qc.append(XXPlusYYGate(Parameter("th"), Parameter("beta")), (0, 1))
     thetas = _get_random_thetas(qc.num_parameters)
     lhs_mps = tensornetwork_from_circuit(QuantumCircuit(num_qubits), settings)
     rhs_mps = tensornetwork_from_circuit(_random_unentangled_circuit(num_qubits), settings)
