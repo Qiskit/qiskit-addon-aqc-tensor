@@ -27,7 +27,12 @@ classifiers = [
 requires-python = ">=3.10"
 
 dependencies = [
-    "plum-dispatch>=2.4.1",
+    # 2.6.1 is the first release that correctly resolves PEP 604 (X | Y)
+    # union annotations whose arms include a lazily-imported plum ModuleType
+    # (e.g. `QiskitAerSimulationSettings | AerSimulator`).  Earlier releases
+    # raise NotFoundLookupError for such dispatches.  See also gh-155 (the
+    # related `plum-dispatch<2.7` cap in the lint extra below).
+    "plum-dispatch>=2.6.1",
     "wrapt>=1.13.3",
     "numpy>=1.23.0",
     "scipy>=1.11.0",
@@ -78,7 +83,7 @@ nbtest = [
 style = [
     "autoflake==2.3.1",
     "black[jupyter]~=25.1",
-    "ruff==0.14.14",
+    "ruff==0.15.5",
     "nbqa>=1.6.0",
 ]
 lint = [
@@ -125,7 +130,7 @@ remove-unused-variables = true
 remove-all-unused-imports = true
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 preview = true  # necessary currently to enable CPY rule
@@ -149,6 +154,7 @@ extend-select = [
     "CPY",   # copyright notices
     "D100",  # missing docstring in public module
     "D103",  # missing docstring in public function
+    "B018",  # bare expression in a notebook cell displays its value
 ]
 
 [tool.ruff.lint.flake8-copyright]

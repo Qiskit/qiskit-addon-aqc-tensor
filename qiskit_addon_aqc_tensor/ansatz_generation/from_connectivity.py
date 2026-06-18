@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from qiskit.circuit import (
@@ -424,10 +424,10 @@ def generate_ansatz_from_circuit(
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
-    "generate_ansatz_from_circuit",
+    "KAK",
+    "ZXZ",
     "AnsatzBlock",
     "OneQubitAnsatzBlock",
     "TwoQubitAnsatzBlock",
-    "ZXZ",
-    "KAK",
+    "generate_ansatz_from_circuit",
 ]

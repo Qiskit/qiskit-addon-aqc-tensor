@@ -13,8 +13,8 @@
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.quantum_info import Statevector
 
+from qiskit.quantum_info import Statevector
 from qiskit_addon_aqc_tensor.simulation import (
     tensornetwork_from_circuit,
 )
