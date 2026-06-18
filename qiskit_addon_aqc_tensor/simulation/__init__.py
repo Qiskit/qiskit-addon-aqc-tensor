@@ -32,9 +32,9 @@ __ = quimb
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
-    "TensorNetworkState",
     "TensorNetworkSimulationSettings",
-    "compute_overlap",
+    "TensorNetworkState",
     "apply_circuit_to_state",
+    "compute_overlap",
     "tensornetwork_from_circuit",
 ]

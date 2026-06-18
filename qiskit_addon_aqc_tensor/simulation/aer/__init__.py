@@ -27,7 +27,7 @@ from .state import QiskitAerMPS, compute_overlap
 _ = _preprocess_for_gradient
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-__all__ = [
+__all__ = [  # noqa: RUF022  (grouped by section, not globally sorted)
     "is_aer_available",
     "QiskitAerMPS",
     "QiskitAerSimulationSettings",

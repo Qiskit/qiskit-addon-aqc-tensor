@@ -15,11 +15,12 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -107,7 +108,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
     #: Callable for constructing the Quimb circuit, e.g., :func:`~quimb.tensor.Circuit` or :func:`~quimb.tensor.CircuitMPS`.
     quimb_circuit_factory: QuimbCircuitFactory
     # Automatic differentiation backend for evaluating gradient.  Options: 'jax', 'autograd', 'torch', etc., or 'explicit' for the original AQC-Tensor gradient implementation in the case of a :func:`~quimb.tensor.CircuitMPS`.
-    autodiff_backend: Optional[str] = None
+    autodiff_backend: str | None = None
     #: Whether to display a progress bar while applying gates.
     progbar: bool = False
 
@@ -137,7 +138,7 @@ def tensornetwork_from_circuit(
     settings: QuimbSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
+    out_state: np.ndarray | None = None,
 ) -> quimb.tensor.Circuit:
     return settings._construct_circuit(qc, out_state=out_state)
 
@@ -189,7 +190,7 @@ def apply_circuit_to_state(
     settings: QuimbSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
+    out_state: np.ndarray | None = None,
 ) -> quimb.tensor.Circuit:
     """Apply a quantum circuit to a tensor network state.
 
@@ -249,7 +250,7 @@ def qiskit_ansatz_to_quimb(
                 # converting back to Qiskit parameters.
                 m = expr.gradient(param)
                 if isinstance(m, ParameterExpression):
-                    raise ValueError(
+                    raise ValueError(  # noqa: TRY004
                         "The Quimb backend currently requires that each ParameterExpression "
                         f"must be in the form mx + b (not {expr}).  Otherwise, the backend is unable "
                         "to recover the parameter."
@@ -450,7 +451,7 @@ def maximize_state_fidelity_loss_function(
 
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-__all__ = [
+__all__ = [  # noqa: RUF022  (grouped by section, not globally sorted)
     "is_quimb_available",
     "QuimbCircuitFactory",
     "QuimbSimulator",
