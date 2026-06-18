@@ -27,7 +27,12 @@ classifiers = [
 requires-python = ">=3.10"
 
 dependencies = [
-    "plum-dispatch>=2.4.1",
+    # 2.6.1 is the first release that correctly resolves PEP 604 (X | Y)
+    # union annotations whose arms include a lazily-imported plum ModuleType
+    # (e.g. `QiskitAerSimulationSettings | AerSimulator`).  Earlier releases
+    # raise NotFoundLookupError for such dispatches.  See also gh-155 (the
+    # related `plum-dispatch<2.7` cap in the lint extra below).
+    "plum-dispatch>=2.6.1",
     "wrapt>=1.13.3",
     "numpy>=1.23.0",
     "scipy>=1.11.0",
