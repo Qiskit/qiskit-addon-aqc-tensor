@@ -34,4 +34,4 @@ class TestExactStatevector:
         qc.rxx(0.7, 0, 2)
         out_state = np.zeros([8], dtype=complex)
         tensornetwork_from_circuit(qc, available_backend_fixture, out_state=out_state)
-        abs(np.vdot(Statevector(qc).data, out_state)) == pytest.approx(1)
+        assert abs(np.vdot(Statevector(qc).data, out_state)) == pytest.approx(1)
