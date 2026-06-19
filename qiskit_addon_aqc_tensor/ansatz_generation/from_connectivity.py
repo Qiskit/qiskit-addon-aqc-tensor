@@ -11,11 +11,12 @@
 # that they have been altered from the originals.
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-"""Utility for generating a general, parametrized, ansatz circuit which matches the two-qubit connectivity of an input circuit."""
+"""Utilities for ansatz generation based on two-qubit connectivity."""
 
 from __future__ import annotations
 
-from typing import Sequence
+import logging
+from collections.abc import Sequence
 
 import numpy as np
 from qiskit.circuit import (
@@ -25,8 +26,14 @@ from qiskit.circuit import (
     QuantumCircuit,
 )
 from qiskit.circuit.library import UnitaryGate
+from qiskit.compiler import transpile
+from qiskit.exceptions import QiskitError
 from qiskit.quantum_info import Operator
 from qiskit.synthesis import OneQubitEulerDecomposer, TwoQubitWeylDecomposition
+
+logger = logging.getLogger(__name__)
+# We'd like the user to actually see warnings from this module by default
+logger.setLevel(logging.WARNING)
 
 
 class AnsatzBlock(Gate):
@@ -65,7 +72,27 @@ class TwoQubitAnsatzBlock(AnsatzBlock):
 
 
 class ZXZ(OneQubitAnsatzBlock):
-    """One-qubit ansatz block based on the ZXZ decomposition."""
+    """One-qubit ansatz block based on the ZXZ decomposition.
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :context: reset
+
+       from qiskit.circuit import ParameterVector, QuantumCircuit
+       from qiskit_addon_aqc_tensor.ansatz_generation import ZXZ
+
+       qc = QuantumCircuit(1)
+       qc.append(ZXZ(ParameterVector("x", 3)), (0,))
+       qc.draw("mpl")
+
+    The above ZXZ block is equivalent to the following circuit:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :context: close-figs
+
+       qc.decompose().draw("mpl")
+    """
 
     ansatz_name = "ZXZ"
     ansatz_num_params = 3
@@ -79,7 +106,27 @@ class ZXZ(OneQubitAnsatzBlock):
 
 
 class KAK(TwoQubitAnsatzBlock):
-    """Two-qubit ansatz block based on the KAK decomposition."""
+    """Two-qubit ansatz block based on the KAK decomposition.
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :context: reset
+
+       from qiskit.circuit import ParameterVector, QuantumCircuit
+       from qiskit_addon_aqc_tensor.ansatz_generation import KAK
+
+       qc = QuantumCircuit(2)
+       qc.append(KAK(ParameterVector("x", 3)), (0, 1))
+       qc.draw("mpl")
+
+    The above KAK block is equivalent to the following circuit:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :context: close-figs
+
+       qc.decompose().draw("mpl")
+    """
 
     ansatz_name = "KAK"
     ansatz_num_params = 3
@@ -188,6 +235,42 @@ def generate_ansatz_from_circuit(
 
        ansatz.assign_parameters(initial_params).draw("mpl")
 
+    A 1D Trotter circuit leads to a similar result, with its characteristic brickwork structure:
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: reset
+
+       from rustworkx.generators import path_graph
+       from qiskit.synthesis import SuzukiTrotter
+       from qiskit_addon_utils.problem_generators import generate_time_evolution_circuit, generate_xyz_hamiltonian
+
+       hamiltonian = generate_xyz_hamiltonian(
+           path_graph(6),
+           coupling_constants=(0.0, 0.0, 1.0),
+           ext_magnetic_field=(0.4, 0.0, 0.0),
+       )
+
+       good_circuit = generate_time_evolution_circuit(
+           hamiltonian,
+           synthesis=SuzukiTrotter(reps=2),
+           time=1.0,
+       )
+
+       good_circuit.draw("mpl", initial_state=True)
+
+    .. plot::
+       :alt: Circuit diagram output by the previous code.
+       :include-source:
+       :context: close-figs
+
+       from qiskit_addon_aqc_tensor import generate_ansatz_from_circuit
+
+       ansatz, initial_params = generate_ansatz_from_circuit(
+           good_circuit, qubits_initially_zero=True, parameter_name="x"
+       )
+       ansatz.assign_parameters(initial_params).draw("mpl", initial_state=True)
     """
     # FIXME: handle classical bits, measurements, resets, and barriers.  maybe
     # conditions too?
@@ -205,7 +288,7 @@ def generate_ansatz_from_circuit(
 
     def set_zxz_params_from_mat(q: int, mat) -> None:
         # Following the variable convention at
-        # https://docs.quantum.ibm.com/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
+        # https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.synthesis.OneQubitEulerDecomposer
         theta, phi, lamb = decomposer.angles(mat)
         fp = free_params[q]
         values: tuple[float, ...] = lamb, theta, phi
@@ -224,7 +307,21 @@ def generate_ansatz_from_circuit(
         partner[q1] = None
         couple_qc = couples[q0, q1]
         mat = Operator(couple_qc).data
-        d = TwoQubitWeylDecomposition(mat)
+        try:
+            d = TwoQubitWeylDecomposition(mat)
+        except QiskitError as exc:
+            # Try again with the transpiled circuit.  See
+            # https://github.com/Qiskit/qiskit-addon-aqc-tensor/pull/100
+            logger.warning(
+                "M2 diagonalization has failed with the following non-fatal exception:",
+                exc_info=exc,
+            )
+            logger.warning(
+                "Trying M2 diagonalization again with transpiled 2-qubit circuit.",
+            )
+            couple_qc = transpile(couple_qc, basis_gates=["cx", "rx", "ry", "rz"])
+            mat = Operator(couple_qc).data
+            d = TwoQubitWeylDecomposition(mat)
         singles[q0] = [UnitaryGate(d.K1r)]
         singles[q1] = [UnitaryGate(d.K1l)]
         fp01 = free_params[q0, q1]
@@ -327,10 +424,10 @@ def generate_ansatz_from_circuit(
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
 __all__ = [
-    "generate_ansatz_from_circuit",
+    "KAK",
+    "ZXZ",
     "AnsatzBlock",
     "OneQubitAnsatzBlock",
     "TwoQubitAnsatzBlock",
-    "ZXZ",
-    "KAK",
+    "generate_ansatz_from_circuit",
 ]

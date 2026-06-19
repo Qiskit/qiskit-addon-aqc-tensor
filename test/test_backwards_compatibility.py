@@ -79,7 +79,6 @@ def test_v0_1_tutorial_workflow():
     aqc_comparison_num_trotter_steps = int(
         subsequent_num_trotter_steps / subsequent_evolution_time * aqc_evolution_time
     )
-    aqc_comparison_num_trotter_steps
 
     comparison_circuit = generate_time_evolution_circuit(
         hamiltonian,
@@ -116,7 +115,6 @@ def test_v0_1_tutorial_workflow():
 
     comparison_mps = tensornetwork_from_circuit(comparison_circuit, simulator_settings)
     comparison_fidelity = abs(compute_overlap(comparison_mps, aqc_target_mps)) ** 2
-    comparison_fidelity
 
     from scipy.optimize import OptimizeResult, minimize
 

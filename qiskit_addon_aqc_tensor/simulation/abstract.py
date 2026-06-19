@@ -14,8 +14,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 from plum import dispatch
 from qiskit.circuit import Gate, QuantumCircuit
@@ -79,7 +77,7 @@ def apply_circuit_to_state(
     settings: TensorNetworkSimulationSettings,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
+    out_state: np.ndarray | None = None,
 ) -> TensorNetworkState:  # pragma: no cover
     """Apply a quantum circuit to a tensor network state.
 
