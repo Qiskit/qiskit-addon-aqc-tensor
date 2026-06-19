@@ -63,7 +63,7 @@ class QiskitAerSimulationSettings(TensorNetworkSimulationSettings):
 
     Example usage:
 
-    .. code-block:: python
+    .. testcode::
 
        from qiskit_aer import AerSimulator
        from qiskit_addon_aqc_tensor.simulation.aer import QiskitAerSimulationSettings

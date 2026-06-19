@@ -85,7 +85,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
 
     Example usage:
 
-    .. code-block:: python
+    .. testcode::
 
        from functools import partial
        import quimb.tensor

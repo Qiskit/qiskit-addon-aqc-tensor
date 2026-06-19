@@ -38,6 +38,7 @@ version = ".".join(release.split(".")[:2])
 extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
     "sphinx.ext.linkcode",
