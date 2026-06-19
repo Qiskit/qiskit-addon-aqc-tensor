@@ -39,9 +39,6 @@ jobs:
       - name: Build docs
         run: |
           tox -e docs
-      - name: Run doctests
-        run: |
-          tox -e doctest
       - name: Upload docs artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v5
         with:
@@ -61,6 +58,35 @@ jobs:
         with:
           name: qiskit-addon-aqc-tensor-htmldocs
           path: ./artifact
+
+  doctest:
+    name: run doctests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Full history is needed by reno, which the doctest build invokes
+          # to render the release notes page.
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+          sudo apt-get update
+          # pandoc is required by nbsphinx, which the doctest build invokes.
+          sudo apt-get install -y pandoc
+      - name: Tell reno to name the upcoming release after the branch we are on
+        shell: bash
+        run: |
+          sed -i.bak -e '/unreleased_version_title:*/d' releasenotes/config.yaml
+          echo unreleased_version_title: \"Upcoming release \(\`\`${GITHUB_REF_NAME}\`\`\)\" >> releasenotes/config.yaml
+      - name: Run doctests
+        run: |
+          tox -e doctest
 
   deploy:
     name: deploy docs
