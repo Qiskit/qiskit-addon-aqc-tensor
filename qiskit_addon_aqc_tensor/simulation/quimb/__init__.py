@@ -123,7 +123,13 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
         gates = qiskit_quimb.quimb_gates(qc)
         circ.apply_gates(gates, progbar=self.progbar)
         if out_state is not None:
-            out_state[:] = np.squeeze(circ.psi.to_dense())
+            # Quimb orders the dense statevector with qubit 0 as the most
+            # significant bit, whereas Qiskit treats qubit 0 as the least
+            # significant.  Reverse the qubit axes to convert to Qiskit's
+            # convention before writing into ``out_state``.
+            num_qubits = qc.num_qubits
+            dense = np.asarray(circ.psi.to_dense()).reshape([2] * num_qubits)
+            out_state[:] = dense.transpose(*range(num_qubits - 1, -1, -1)).reshape(-1)
         return circ
 
 
