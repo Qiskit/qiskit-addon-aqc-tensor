@@ -31,16 +31,23 @@ If you use this package in your research, use the ``CITATON.bib`` file in this p
    :language: bibtex
 
 
-Contents
---------
 .. toctree::
   :hidden:
 
-   Documentation Home <self>
-   Installation Instructions <install>
-   Tutorials <tutorials/index>
-   Explanatory Material <explanation/index>
-   API Reference <apidocs/index>
-   How-To Guides <how-tos/index>
+   Home <self>
+   Installation instructions <install>
+   Guides <guides/index>
    GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
-   Release Notes <release-notes>
+
+.. toctree::
+  :hidden:
+  :caption: Tutorials
+
+   Approximate quantum compilation for time evolution circuits <https://quantum.cloud.ibm.com/docs/en/tutorials/approximate-quantum-compilation-for-time-evolution>
+
+.. toctree::
+  :hidden:
+  :caption: API reference
+
+   Python API reference <apidocs/index>
+   Release notes <release-notes>
