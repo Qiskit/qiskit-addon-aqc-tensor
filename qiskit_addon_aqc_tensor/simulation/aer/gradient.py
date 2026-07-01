@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 r"""Gradient implementation for Aer backend."""
+
 from __future__ import annotations
 
 import numpy as np
