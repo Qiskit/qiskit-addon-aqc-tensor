@@ -101,7 +101,7 @@ docs = [
     "nbsphinx>=0.8.8",
     "sphinx-copybutton>=0.5.0",
     "reno>=3.4.0",
-    "qiskit-sphinx-theme~=2.0.0"
+    "qiskit-sphinx-theme~=2.1.0"
 ]
 notebook-dependencies = [
     "qiskit-addon-aqc-tensor[aer,quimb-jax]",
