@@ -31,7 +31,7 @@ dependencies = [
     # union annotations whose arms include a lazily-imported plum ModuleType
     # (e.g. `QiskitAerSimulationSettings | AerSimulator`).  Earlier releases
     # raise NotFoundLookupError for such dispatches.  See also gh-155 (the
-    # related `plum-dispatch<2.7` cap in the lint extra below).
+    # related `plum-dispatch<2.10` cap in the lint extra below).
     "plum-dispatch>=2.6.1",
     "wrapt>=1.13.3",
     "numpy>=1.23.0",
@@ -91,7 +91,7 @@ lint = [
     "mypy==1.19.1",
     "reno>=3.4.0",
     "pylint==4.0.6",
-    "plum-dispatch<2.7",
+    "plum-dispatch<2.10",
 ]
 docs = [
     "Sphinx>=3.0.0",
