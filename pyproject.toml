@@ -52,7 +52,7 @@ quimb = [
 ]
 quimb-autograd = [
     "qiskit-addon-aqc-tensor[quimb]",
-    "autograd>=1.7.0",
+    "autograd>=1.9.0",
 ]
 quimb-jax = [
     "qiskit-addon-aqc-tensor[quimb]",
