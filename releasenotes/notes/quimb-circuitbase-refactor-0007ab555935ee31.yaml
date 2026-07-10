@@ -3,4 +3,4 @@ fixes:
   - |
     Fixed the quimb backend to be compatible with versions of quimb following
     the `CircuitBase refactor <https://github.com/jcmgray/quimb/pull/399>`__.
-    quimb 1.14.0 is the last released version of quimb before the refactor.
+    quimb 1.14.0 is the last released version before the refactor.
