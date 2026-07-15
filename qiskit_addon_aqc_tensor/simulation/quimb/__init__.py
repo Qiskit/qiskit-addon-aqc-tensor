@@ -38,10 +38,14 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no cover
     import quimb.tensor
-    from quimb.tensor import Circuit, CircuitMPS
+    from quimb.tensor import Circuit, CircuitBase, CircuitMPS
 else:
     Circuit = ModuleType("quimb.tensor", "Circuit")
     CircuitMPS = ModuleType("quimb.tensor", "CircuitMPS")
+    # quimb >= 1.14.1.dev76 introduced `CircuitBase`, with `Circuit` and
+    # `CircuitMPS` as siblings deriving from it.  On older quimb the root is
+    # `Circuit` itself, and `CircuitMPS` and others derive from it.
+    CircuitBase = ModuleType("quimb.tensor", "CircuitBase", allow_fail=True) | Circuit
 
 
 def _on_quimb_import(_module) -> None:
@@ -68,7 +72,7 @@ class QuimbCircuitFactory(Protocol):
 
     def __call__(  # noqa: D102
         self, *, N: int, psi0: quimb.tensor.TensorNetworkGenVector | None = None
-    ) -> quimb.tensor.Circuit:  # pragma: no cover
+    ) -> CircuitBase:  # pragma: no cover
         ...
 
 
@@ -127,7 +131,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
 
 
 @dispatch
-def compute_overlap(circ1: Circuit, circ2: Circuit, /) -> complex:
+def compute_overlap(circ1: CircuitBase, circ2: CircuitBase, /) -> complex:
     return complex(circ1.psi.H @ circ2.psi)
 
 
@@ -137,8 +141,13 @@ def tensornetwork_from_circuit(
     settings: QuimbSimulator,
     /,
     *,
+<<<<<<< HEAD
     out_state: Optional[np.ndarray] = None,
 ) -> quimb.tensor.Circuit:
+=======
+    out_state: np.ndarray | None = None,
+) -> CircuitBase:
+>>>>>>> f6c4437 (Fix the quimb backend following its CircuitBase refactor (#200))
     return settings._construct_circuit(qc, out_state=out_state)
 
 
@@ -185,12 +194,17 @@ def _apply_two_qubit_gate_inplace(
 @dispatch
 def apply_circuit_to_state(
     qc: QuantumCircuit,
-    circ0: Circuit,
+    circ0: CircuitBase,
     settings: QuimbSimulator,
     /,
     *,
+<<<<<<< HEAD
     out_state: Optional[np.ndarray] = None,
 ) -> quimb.tensor.Circuit:
+=======
+    out_state: np.ndarray | None = None,
+) -> CircuitBase:
+>>>>>>> f6c4437 (Fix the quimb backend following its CircuitBase refactor (#200))
     """Apply a quantum circuit to a tensor network state.
 
     The input state (``psi``) is not modified.
@@ -424,7 +438,10 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
     import quimb.tensor as qtn
 
     target = objective.target
-    if isinstance(target, qtn.Circuit):
+    # `CircuitBase` is a new base class introduced in quimb 1.14.1.dev76, at
+    # https://github.com/jcmgray/quimb/pull/399
+    circuit_base = getattr(qtn, "CircuitBase", qtn.Circuit)
+    if isinstance(target, circuit_base):
         target = target.psi
     return {
         "loss_fn": maximize_state_fidelity_loss_function,
@@ -433,7 +450,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
 
 
 def maximize_state_fidelity_loss_function(
-    circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.TensorNetworkGenVector
+    circ: CircuitBase, /, *, target: quimb.tensor.TensorNetworkGenVector
 ):
     """Loss function for use with Quimb, compatible with automatic differentiation.
 
