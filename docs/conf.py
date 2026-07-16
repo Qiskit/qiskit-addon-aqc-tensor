@@ -84,6 +84,12 @@ autodoc_default_options = {
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 
+# `CircuitBase` lives in a `TYPE_CHECKING` block but does not yet exist in a
+# released quimb, so sphinx-autodoc-typehints cannot import it at doc-build
+# time.  Suppress just that guarded-import warning until quimb releases a
+# version containing `CircuitBase`, at which point this line can be removed.
+suppress_warnings = ["sphinx_autodoc_typehints.guarded_import"]
+
 
 # nbsphinx options (for tutorials)
 nbsphinx_timeout = 180
