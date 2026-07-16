@@ -19,7 +19,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence, Union
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -45,7 +45,7 @@ else:
     # quimb >= 1.14.1.dev76 introduced `CircuitBase`, with `Circuit` and
     # `CircuitMPS` as siblings deriving from it.  On older quimb the root is
     # `Circuit` itself, and `CircuitMPS` and others derive from it.
-    CircuitBase = ModuleType("quimb.tensor", "CircuitBase", allow_fail=True) | Circuit
+    CircuitBase = Union[ModuleType("quimb.tensor", "CircuitBase", allow_fail=True), Circuit]
 
 
 def _on_quimb_import(_module) -> None:
@@ -141,13 +141,8 @@ def tensornetwork_from_circuit(
     settings: QuimbSimulator,
     /,
     *,
-<<<<<<< HEAD
     out_state: Optional[np.ndarray] = None,
-) -> quimb.tensor.Circuit:
-=======
-    out_state: np.ndarray | None = None,
 ) -> CircuitBase:
->>>>>>> f6c4437 (Fix the quimb backend following its CircuitBase refactor (#200))
     return settings._construct_circuit(qc, out_state=out_state)
 
 
@@ -198,13 +193,8 @@ def apply_circuit_to_state(
     settings: QuimbSimulator,
     /,
     *,
-<<<<<<< HEAD
     out_state: Optional[np.ndarray] = None,
-) -> quimb.tensor.Circuit:
-=======
-    out_state: np.ndarray | None = None,
 ) -> CircuitBase:
->>>>>>> f6c4437 (Fix the quimb backend following its CircuitBase refactor (#200))
     """Apply a quantum circuit to a tensor network state.
 
     The input state (``psi``) is not modified.
