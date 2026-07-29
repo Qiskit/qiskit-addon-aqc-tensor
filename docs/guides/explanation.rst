@@ -109,7 +109,7 @@ Currently, AQC-Tensor supports the following tensor-network simulators:
 
 - Qiskit Aer's MPS simulator
 - Quimb's `eager <https://quimb.readthedocs.io/en/latest/tensor-circuit-mps.html>`__ :class:`~quimb.tensor.CircuitMPS` simulator
-- Quimb's `lazy <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__ :class:`~quimb.tensor.Circuit` simulator (may work only on small circuits so far; we're working to fix this soon with more clever contractions)
+- Quimb's `lazy <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__ :class:`~quimb.tensor.Circuit` simulator (may work only on small circuits so far; this could possibly be improved with more clever contractions)
 
 The most important parameter of a tensor network is its maximum bond dimension, which limits how much entanglement it can represent (and thus to what depth a given circuit can be faithfully simulated).  The bond dimension is often represented by the Greek letter :math:`\chi`.
 
@@ -131,7 +131,7 @@ The Aer backend always uses the explicit gradient code in the :mod:`~qiskit_addo
 
 The Quimb backend will typically be used with an automatic differentiation backend; the user selects a backend from among those supported by Quimb.  Alternatively, you can instead pass ``"explicit"`` as the ``autodiff_backend`` when instantiating the :class:`.QuimbSimulator` object; in this case, the :mod:`~qiskit_addon_aqc_tensor.simulation.explicit_gradient` module will be used.  It is only recommended to use explicit gradients with Quimb's eager :class:`~quimb.tensor.CircuitMPS` simulator, not the lazy :class:`~quimb.tensor.Circuit` simulator.
 
-Regardless of which backend you choose, the gradient code can understand linear parameter expressions (`ParameterExpression` objects).  This support is essential, as linear expressions are returned by the ansatz generation code.
+Regardless of which backend you choose, the gradient code can understand linear parameter expressions (:class:`~qiskit.circuit.ParameterExpression` objects).  This support is essential, as linear expressions are returned by the ansatz generation code.
 
 Optimization method
 ~~~~~~~~~~~~~~~~~~~
