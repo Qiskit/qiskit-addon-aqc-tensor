@@ -90,7 +90,7 @@ two-qubit block, which is the theoretical minimum (see, for example, Fig. 2 of
 https://arxiv.org/abs/quant-ph/0308033).
 The automatic ansatz is based
 on the `KAK
-decomposition <https://qiskit-extensions.github.io/circuit-knitting-toolbox/circuit_cutting/explanation/index.html#more-general-cut-two-qubit-gates-via-the-kak-decomposition>`__,
+decomposition <https://qiskit.github.io/qiskit-addon-cutting/explanation/#more-general-cut-two-qubit-gates-via-the-kak-decomposition>`__,
 which parametrizes any two-qubit gate in terms of three parameters, up
 to single-qubit rotations. The single-qubit rotations are then decomposed as ZXZ, each of which has three parameters.
 Each two-qubit block of the original
@@ -111,12 +111,6 @@ Currently, AQC-Tensor supports the following tensor-network simulators:
 - Quimb's `eager <https://quimb.readthedocs.io/en/latest/tensor-circuit-mps.html>`__ :class:`~quimb.tensor.CircuitMPS` simulator
 - Quimb's `lazy <https://quimb.readthedocs.io/en/latest/tensor-circuit.html>`__ :class:`~quimb.tensor.Circuit` simulator (may work only on small circuits so far; this could possibly be improved with more clever contractions)
 
-The most important parameter of a tensor network is its maximum bond dimension, which limits how much entanglement it can represent (and thus to what depth a given circuit can be faithfully simulated).  The bond dimension is often represented by the Greek letter :math:`\chi`.
-
-Given a general circuit on :math:`L` qubits, a matrix-product state needs at most a bond dimension of :math:`\chi_\mathrm{exact} = 2^{\lfloor L/2 \rfloor}` to be able to simulate it to *any* depth.  Of course, general circuits on 100+ qubits cannot be classically simulated, so it will be intractable to set the bond dimension this high for those circuits.
-
-For this reason, if you are attempting to experiment with AQC-Tensor on a toy problem with few qubits, it is important to ensure that :math:`\chi < 2^{\lfloor L/2 \rfloor}`.  Otherwise, any circuit can be simulated to any depth, and there is no point in performing AQC.
-
 Objective function
 ~~~~~~~~~~~~~~~~~~
 
@@ -132,13 +126,6 @@ The Aer backend always uses the explicit gradient code in the :mod:`~qiskit_addo
 The Quimb backend will typically be used with an automatic differentiation backend; the user selects a backend from among those supported by Quimb.  Alternatively, you can instead pass ``"explicit"`` as the ``autodiff_backend`` when instantiating the :class:`.QuimbSimulator` object; in this case, the :mod:`~qiskit_addon_aqc_tensor.simulation.explicit_gradient` module will be used.  It is only recommended to use explicit gradients with Quimb's eager :class:`~quimb.tensor.CircuitMPS` simulator, not the lazy :class:`~quimb.tensor.Circuit` simulator.
 
 Regardless of which backend you choose, the gradient code can understand linear parameter expressions (:class:`~qiskit.circuit.ParameterExpression` objects).  This support is essential, as linear expressions are returned by the ansatz generation code.
-
-Optimization method
-~~~~~~~~~~~~~~~~~~~
-
-Users are encouraged to use :mod:`scipy.optimize` to perform the optimization.
-
-L-BFGS is the optimizer demonstrated in the tutorial notebook. It works well in practice because it uses the function value and its gradient to approximate the Hessian.  It works well when given an initial point and seems to work particularly well in the case of Trotter circuits.  However, it might terminate early if it starts in a barren plateau.  In that case, performing a handful of steps using the ADAM optimizer first might help.
 
 References
 ----------
