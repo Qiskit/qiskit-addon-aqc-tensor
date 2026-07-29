@@ -26,11 +26,12 @@ and is thus agnostic to the tensor-network backend used.
     preprocess_circuit_for_backtracking
     compute_gradient_of_tensornetwork_overlap
 """
+
 from __future__ import annotations
 
 import copy
+from collections.abc import Callable, Sequence
 from functools import partial
-from typing import Callable, Sequence
 
 import numpy as np
 from qiskit.circuit import (
@@ -187,7 +188,7 @@ def _preprocess_one_qubit_parametrized_pauli_rotation(
     param = next(iter(expr.parameters))
     derivative = expr.gradient(param)
     if isinstance(derivative, ParameterExpression):
-        raise ValueError(
+        raise ValueError(  # noqa: TRY004
             "ParameterExpression's derivative must be a floating-point number, "
             "i.e., the expression must be in the form ax + b."
         )
@@ -331,6 +332,6 @@ def compute_gradient_of_tensornetwork_overlap(
 
 
 __all__ = [
-    "preprocess_circuit_for_backtracking",
     "compute_gradient_of_tensornetwork_overlap",
+    "preprocess_circuit_for_backtracking",
 ]

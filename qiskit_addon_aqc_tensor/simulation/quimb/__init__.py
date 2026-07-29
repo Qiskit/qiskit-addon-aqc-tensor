@@ -15,11 +15,12 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
 from plum import ModuleType, clear_all_cache, dispatch
@@ -38,10 +39,14 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no cover
     import quimb.tensor
-    from quimb.tensor import Circuit, CircuitMPS
+    from quimb.tensor import Circuit, CircuitBase, CircuitMPS
 else:
     Circuit = ModuleType("quimb.tensor", "Circuit")
     CircuitMPS = ModuleType("quimb.tensor", "CircuitMPS")
+    # quimb >= 1.14.1.dev76 introduced `CircuitBase`, with `Circuit` and
+    # `CircuitMPS` as siblings deriving from it.  On older quimb the root is
+    # `Circuit` itself, and `CircuitMPS` and others derive from it.
+    CircuitBase = ModuleType("quimb.tensor", "CircuitBase", allow_fail=True) | Circuit
 
 
 def _on_quimb_import(_module) -> None:
@@ -68,7 +73,7 @@ class QuimbCircuitFactory(Protocol):
 
     def __call__(  # noqa: D102
         self, *, N: int, psi0: quimb.tensor.TensorNetworkGenVector | None = None
-    ) -> quimb.tensor.Circuit:  # pragma: no cover
+    ) -> CircuitBase:  # pragma: no cover
         ...
 
 
@@ -84,7 +89,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
 
     Example usage:
 
-    .. code-block:: python
+    .. testcode::
 
        from functools import partial
        import quimb.tensor
@@ -107,7 +112,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
     #: Callable for constructing the Quimb circuit, e.g., :func:`~quimb.tensor.Circuit` or :func:`~quimb.tensor.CircuitMPS`.
     quimb_circuit_factory: QuimbCircuitFactory
     # Automatic differentiation backend for evaluating gradient.  Options: 'jax', 'autograd', 'torch', etc., or 'explicit' for the original AQC-Tensor gradient implementation in the case of a :func:`~quimb.tensor.CircuitMPS`.
-    autodiff_backend: Optional[str] = None
+    autodiff_backend: str | None = None
     #: Whether to display a progress bar while applying gates.
     progbar: bool = False
 
@@ -127,7 +132,7 @@ class QuimbSimulator(TensorNetworkSimulationSettings):
 
 
 @dispatch
-def compute_overlap(circ1: Circuit, circ2: Circuit, /) -> complex:
+def compute_overlap(circ1: CircuitBase, circ2: CircuitBase, /) -> complex:
     return complex(circ1.psi.H @ circ2.psi)
 
 
@@ -137,8 +142,8 @@ def tensornetwork_from_circuit(
     settings: QuimbSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
-) -> quimb.tensor.Circuit:
+    out_state: np.ndarray | None = None,
+) -> CircuitBase:
     return settings._construct_circuit(qc, out_state=out_state)
 
 
@@ -185,12 +190,12 @@ def _apply_two_qubit_gate_inplace(
 @dispatch
 def apply_circuit_to_state(
     qc: QuantumCircuit,
-    circ0: Circuit,
+    circ0: CircuitBase,
     settings: QuimbSimulator,
     /,
     *,
-    out_state: Optional[np.ndarray] = None,
-) -> quimb.tensor.Circuit:
+    out_state: np.ndarray | None = None,
+) -> CircuitBase:
     """Apply a quantum circuit to a tensor network state.
 
     The input state (``psi``) is not modified.
@@ -249,7 +254,7 @@ def qiskit_ansatz_to_quimb(
                 # converting back to Qiskit parameters.
                 m = expr.gradient(param)
                 if isinstance(m, ParameterExpression):
-                    raise ValueError(
+                    raise ValueError(  # noqa: TRY004
                         "The Quimb backend currently requires that each ParameterExpression "
                         f"must be in the form mx + b (not {expr}).  Otherwise, the backend is unable "
                         "to recover the parameter."
@@ -424,7 +429,10 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
     import quimb.tensor as qtn
 
     target = objective.target
-    if isinstance(target, qtn.Circuit):
+    # `CircuitBase` is a new base class introduced in quimb 1.14.1.dev76, at
+    # https://github.com/jcmgray/quimb/pull/399
+    circuit_base = getattr(qtn, "CircuitBase", qtn.Circuit)
+    if isinstance(target, circuit_base):
         target = target.psi
     return {
         "loss_fn": maximize_state_fidelity_loss_function,
@@ -433,7 +441,7 @@ def tnoptimizer_objective_kwargs(objective: MaximizeStateFidelity, /) -> dict[st
 
 
 def maximize_state_fidelity_loss_function(
-    circ: quimb.tensor.Circuit, /, *, target: quimb.tensor.TensorNetworkGenVector
+    circ: CircuitBase, /, *, target: quimb.tensor.TensorNetworkGenVector
 ):
     """Loss function for use with Quimb, compatible with automatic differentiation.
 
@@ -450,7 +458,7 @@ def maximize_state_fidelity_loss_function(
 
 
 # Reminder: update the RST file in docs/apidocs when adding new interfaces.
-__all__ = [
+__all__ = [  # noqa: RUF022  (grouped by section, not globally sorted)
     "is_quimb_available",
     "QuimbCircuitFactory",
     "QuimbSimulator",
