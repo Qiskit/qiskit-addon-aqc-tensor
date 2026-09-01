@@ -23,8 +23,8 @@ from pathlib import Path
 
 import qiskit_addon_aqc_tensor
 
-project = "AQC-Tensor"
-copyright = "2024"  # pylint: disable=redefined-builtin
+project = "Approximate quantum compilation (AQC-Tensor)"
+copyright = "2026"  # pylint: disable=redefined-builtin
 author = "IBM Quantum"
 
 _rootdir = Path(__file__).parent.parent
