@@ -37,6 +37,8 @@ We then use an iterative optimization method to make the *good* state as close t
 
 (The third item is not required *in principle*, but it really helps to give the optimizer a sensible starting point; otherwise, it is much more likely to get stuck in a local (but not global) minimum.)
 
+.. _ansatz generation motivation:
+
 Ansatz generation (motivation)
 ------------------------------
 
@@ -48,8 +50,10 @@ and (3) from a circuit.  In the case of Trotter evolution (and likely
 other circuit classes of interest), we can use the same
 circuit-generation function to generate (1) as well as the input to
 :func:`.generate_ansatz_from_circuit`, thus enabling the generation of
-all three inputs from a single function.  The tutorial is a good
-demonstration of this re-use of a single circuit-generation function.
+all three inputs from a single function.  The `AQC-Tensor tutorial
+<https://quantum.cloud.ibm.com/docs/tutorials/approximate-quantum-compilation-for-time-evolution>`__
+is a good demonstration of this re-use of a single circuit-generation
+function.
 
 Specifically, :func:`.generate_ansatz_from_circuit` will take an input circuit and generate
 the ansatz circuit (2) and initial parameters

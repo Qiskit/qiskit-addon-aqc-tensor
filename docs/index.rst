@@ -14,6 +14,10 @@ It has been tested primarily on Trotter circuits to date.  It might, however, be
 - A *good* circuit that prepares an approximation to the target state, but with fewer layers when compiled to the target hardware device
 
 .. image:: images/aqc-compression.png
+   :alt: A deep circuit is compressed into a shallower ansatz circuit that
+         approximately prepares the same state.
+   :width: 600px
+   :align: center
 
 (Figure is taken from `arXiv:2301.08609 <https://arxiv.org/abs/2301.08609>`__.)
 
@@ -41,7 +45,7 @@ Optimization method
 
 Users are encouraged to use :mod:`scipy.optimize` to perform the optimization.
 
-L-BFGS is the optimizer demonstrated in the tutorial notebook. It works well in practice because it uses the function value and its gradient to approximate the Hessian.  It works well when given an initial point and seems to work particularly well in the case of Trotter circuits.  However, it might terminate early if it starts in a barren plateau.  In that case, performing a handful of steps using the ADAM optimizer first might help.
+L-BFGS is the optimizer demonstrated in the `AQC-Tensor tutorial <https://quantum.cloud.ibm.com/docs/tutorials/approximate-quantum-compilation-for-time-evolution>`__. It works well in practice because it uses the function value and its gradient to approximate the Hessian.  It works well when given an initial point and seems to work particularly well in the case of Trotter circuits.  However, it might terminate early if it starts in a barren plateau.  In that case, performing a handful of steps using the ADAM optimizer first might help.
 
 Developer guide
 ---------------
@@ -51,29 +55,27 @@ The developer guide is located at `CONTRIBUTING.md <https://github.com/Qiskit/qi
 Citing this project
 -------------------
 
-If you use this package in your research, use the ``CITATON.bib`` file in this project's repository to cite the appropriate references:
-
-.. literalinclude:: ../CITATION.bib
-   :language: bibtex
+If you use this package in your research, use the `CITATION.bib <https://github.com/Qiskit/qiskit-addon-aqc-tensor/blob/main/CITATION.bib>`__
+file in this project's repository to cite the appropriate references.
 
 
 .. toctree::
-  :hidden:
+   :hidden:
 
-   Home <self>
+   Documentation home <self>
    Installation instructions <install>
    Guides <guides/index>
    GitHub <https://github.com/Qiskit/qiskit-addon-aqc-tensor>
 
 .. toctree::
-  :hidden:
-  :caption: Tutorials
+   :hidden:
+   :caption: Tutorials
 
-   Approximate quantum compilation for time evolution circuits <https://quantum.cloud.ibm.com/docs/en/tutorials/approximate-quantum-compilation-for-time-evolution>
+   Approximate quantum compilation for time evolution circuits <https://quantum.cloud.ibm.com/docs/tutorials/approximate-quantum-compilation-for-time-evolution>
 
 .. toctree::
-  :hidden:
-  :caption: API reference
+   :hidden:
+   :caption: API reference
 
-   Python API reference <apidocs/index>
+   Python API reference <https://quantum.cloud.ibm.com/docs/api/qiskit-addon-aqc-tensor>
    Release notes <release-notes>
