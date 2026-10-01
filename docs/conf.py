@@ -23,8 +23,8 @@ from pathlib import Path
 
 import qiskit_addon_aqc_tensor
 
-project = "AQC-Tensor"
-copyright = "2024"  # pylint: disable=redefined-builtin
+project = "Approximate quantum compilation (AQC-Tensor)"
+project_copyright = "2026, Qiskit addons team"
 author = "IBM Quantum"
 
 _rootdir = Path(__file__).parent.parent
@@ -92,7 +92,7 @@ napoleon_numpy_docstring = False
 suppress_warnings = ["sphinx_autodoc_typehints.guarded_import"]
 
 
-# nbsphinx options (for tutorials)
+# nbsphinx options (for notebooks)
 nbsphinx_timeout = 180
 nbsphinx_execute = "always" if os.environ.get("CI") == "true" else "auto"
 nbsphinx_widgets_path = ""
@@ -100,7 +100,6 @@ exclude_patterns = [
     "_build",
     "**.ipynb_checkpoints",
     "test_notebooks",
-    "**/README.rst",
 ]
 
 # matplotlib.sphinxext.plot_directive options
@@ -121,7 +120,17 @@ _inlined_apis = [
 ]
 
 redirects = {
-    "stubs/qiskit_addon_aqc_tensor.ansatz_generation.generate_ansatz_from_circuit": "../apidocs/qiskit-addon-aqc-tensor.html#qiskit_addon_aqc_tensor.generate_ansatz_from_circuit",
+    # The former single-page API reference was split into per-module pages.
+    "apidocs/qiskit-addon-aqc-tensor": "./ansatz_generation.html",
+    # `how-tos/` and `explanation/` were consolidated into `guides/`.
+    "how-tos/index": "../guides/index.html",
+    "how-tos/quickstart-aqc": "../guides/quickstart.html",
+    "how-tos/01_quimb_tnoptimizer": "../guides/01_quimb_tnoptimizer.html",
+    "explanation/index": "../guides/explanation.html",
+    # The tutorial now lives on the IBM Quantum Platform.
+    "tutorials/index": "https://quantum.cloud.ibm.com/docs/tutorials/approximate-quantum-compilation-for-time-evolution",
+    "tutorials/01_initial_state_aqc": "https://quantum.cloud.ibm.com/docs/tutorials/approximate-quantum-compilation-for-time-evolution",
+    "stubs/qiskit_addon_aqc_tensor.ansatz_generation.generate_ansatz_from_circuit": "../apidocs/ansatz_generation.html#qiskit_addon_aqc_tensor.generate_ansatz_from_circuit",
     **{
         f"stubs/{module}.{name}": f"../apidocs/{module.split('.')[-1]}.html#{module}.{name}"
         for module, name in _inlined_apis

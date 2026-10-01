@@ -37,7 +37,7 @@ from qiskit_addon_aqc_tensor.simulation.aer import is_aer_available
 def test_v0_1_tutorial_workflow():
     """v0.1 tutorial workflow, using ``OneMinusFidelity``
 
-    https://qiskit.github.io/qiskit-addon-aqc-tensor/tutorials/01_initial_state_aqc.html
+    https://quantum.cloud.ibm.com/docs/tutorials/approximate-quantum-compilation-for-time-evolution
     """
     from qiskit.transpiler import CouplingMap
     from qiskit_addon_utils.problem_generators import generate_xyz_hamiltonian
