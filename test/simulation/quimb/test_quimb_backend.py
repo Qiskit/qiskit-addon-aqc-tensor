@@ -56,57 +56,57 @@ class TestQuimbBackend:
 
 
 class TestQuimbConversion:
-    def test_parameter_expression(self):
+    def test_parameter_expression(self, quimb):
         qc = QuantumCircuit(1)
         p = Parameter("x")
         qc.rx(1 - p, 0)
         val = np.random.default_rng().random()
-        circ, ctx = qiskit_ansatz_to_quimb(qc, [val])
+        circ, ctx = qiskit_ansatz_to_quimb(qc, [val], quimb.tensor.Circuit)
         recovered = recover_parameters_from_quimb(circ, ctx)
         assert recovered == pytest.approx([val])
 
-    def test_parameter_count_mismatch(self):
+    def test_parameter_count_mismatch(self, quimb):
         qc = QuantumCircuit()
         with pytest.raises(ValueError) as e_info:
-            qiskit_ansatz_to_quimb(qc, [1.0])
+            qiskit_ansatz_to_quimb(qc, [1.0], quimb.tensor.Circuit)
         assert (
             e_info.value.args[0]
             == "1 parameter(s) were passed, but the circuit has 0 parameter(s)."
         )
 
-    def test_multiple_parameter_gate(self):
+    def test_multiple_parameter_gate(self, quimb):
         qc = QuantumCircuit(2)
         qc.append(XXPlusYYGate(Parameter("x")), (0, 1))
-        qiskit_ansatz_to_quimb(qc, [np.pi / 2])
+        qiskit_ansatz_to_quimb(qc, [np.pi / 2], quimb.tensor.CircuitMPS)
 
-    def test_parameterexpression_multiple_parameters_failure_message(self):
+    def test_parameterexpression_multiple_parameters_failure_message(self, quimb):
         qc = QuantumCircuit(1)
         x = Parameter("x")
         y = Parameter("y")
         qc.rx(x + y, 0)
         qc.ry(x - y, 0)
         with pytest.raises(ValueError) as e_info:
-            qiskit_ansatz_to_quimb(qc, [np.pi / 2, np.pi / 4])
+            qiskit_ansatz_to_quimb(qc, [np.pi / 2, np.pi / 4], quimb.tensor.Circuit)
         assert e_info.value.args[0] == "Each expression cannot contain more than one Parameter"
 
-    def test_nonlinear_parameterexpression_failure_message(self):
+    def test_nonlinear_parameterexpression_failure_message(self, quimb):
         qc = QuantumCircuit(1)
         x = Parameter("x")
         qc.rx(x**2, 0)
         with pytest.raises(ValueError) as e_info:
-            qiskit_ansatz_to_quimb(qc, [np.pi / 8])
+            qiskit_ansatz_to_quimb(qc, [np.pi / 8], quimb.tensor.Circuit)
         assert (
             e_info.value.args[0]
             == "The Quimb backend currently requires that each ParameterExpression must be in the form mx + b (not x**2).  Otherwise, the backend is unable to recover the parameter."
         )
 
-    def test_repeated_parameter(self):
+    def test_repeated_parameter(self, quimb):
         qc = QuantumCircuit(1)
         x = Parameter("x")
         qc.rx(x, 0)
         qc.ry(x, 0)
         with pytest.raises(ValueError) as e_info:
-            qiskit_ansatz_to_quimb(qc, [np.pi / 2])
+            qiskit_ansatz_to_quimb(qc, [np.pi / 2], quimb.tensor.Circuit)
         assert (
             e_info.value.args[0]
             == "Parameter x cannot be repeated in circuit, else quimb will attempt to optimize each instance separately."
@@ -124,7 +124,7 @@ class TestQuimbConversion:
             == "Gradient method unspecified. Please specify an autodiff_backend for the QuimbSimulator object."
         )
 
-    def test_recovery_num_parameters_mismatch_error(self):
+    def test_recovery_num_parameters_mismatch_error(self, quimb):
         x = Parameter("x")
         y = Parameter("y")
         qc1 = QuantumCircuit(1)
@@ -132,8 +132,8 @@ class TestQuimbConversion:
         qc2 = QuantumCircuit(1)
         qc2.rx(1 - x, 0)
         qc2.ry(1 - 0.5 * y, 0)
-        circ1, _ = qiskit_ansatz_to_quimb(qc1, [0.5])
-        _, ctx2 = qiskit_ansatz_to_quimb(qc2, [0.5, 0.3])
+        circ1, _ = qiskit_ansatz_to_quimb(qc1, [0.5], quimb.tensor.Circuit)
+        _, ctx2 = qiskit_ansatz_to_quimb(qc2, [0.5, 0.3], quimb.tensor.Circuit)
         with pytest.raises(ValueError) as e_info:
             recover_parameters_from_quimb(circ1, ctx2)
         assert (
