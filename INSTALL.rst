@@ -51,7 +51,7 @@ Upgrade pip and install the AQC-Tensor package.  To meaningfully use the package
 Option 2: Install from source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To develop in the repository or to run the tutorials locally, install from source:
+To develop in the repository or to run the guide notebooks locally, install from source:
 
 In either case, the first step is to clone the AQC-Tensor repository.
 
@@ -66,7 +66,7 @@ Next, upgrade pip and enter the repository.
     pip install --upgrade pip
     cd qiskit-addon-aqc-tensor
 
-The next step is to install AQC-Tensor to the virtual environment. If you plan on running the tutorials, install the
+The next step is to install AQC-Tensor to the virtual environment. If you plan on running the guide notebooks, install the
 notebook dependencies in order to run all the visualizations in the notebooks.
 If you plan on developing in the repository, install the ``dev`` dependencies.
 
