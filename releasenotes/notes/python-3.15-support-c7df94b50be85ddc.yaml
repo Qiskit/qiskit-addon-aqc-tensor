@@ -1,0 +1,8 @@
+---
+other:
+  - |
+    Added support for Python 3.15.  No code changes were necessary, so older
+    releases are expected to work on Python 3.15 too.  The optional ``kahypar``
+    dependency is not installed on Python 3.15, as it has no wheels for that
+    version yet; cotengra will emit a warning about this, but the quimb backend
+    is otherwise fully supported.
