@@ -99,7 +99,7 @@ style = [
 ]
 lint = [
     "qiskit-addon-aqc-tensor[style]",
-    "mypy==2.3.1",
+    "mypy==2.4.1",
     "reno>=3.4.0",
     "pylint==4.0.9",
     "plum-dispatch<2.7",
