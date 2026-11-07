@@ -1,0 +1,11 @@
+---
+fixes:
+  - |
+    Fixed the qubit ordering of the ``out_state`` array populated by the Quimb
+    backend's :func:`~qiskit_addon_aqc_tensor.simulation.tensornetwork_from_circuit`
+    and :func:`~qiskit_addon_aqc_tensor.simulation.apply_circuit_to_state`.
+    Quimb orders the dense statevector with qubit 0 as the most-significant bit,
+    whereas Qiskit treats qubit 0 as the least-significant bit.  The returned
+    ``out_state`` now follows Qiskit's convention, matching the Aer backend.
+    Previously, the amplitudes were written in reversed-qubit order, which only
+    happened to be correct for states that are symmetric under qubit reversal.

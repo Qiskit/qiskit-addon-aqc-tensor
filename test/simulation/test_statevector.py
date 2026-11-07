@@ -13,9 +13,8 @@
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
 
-# TODO: restore with the assertion in test_random_circuit_statevector (see #184)
-# from qiskit.quantum_info import Statevector
 from qiskit_addon_aqc_tensor.simulation import (
     tensornetwork_from_circuit,
 )
@@ -35,7 +34,4 @@ class TestExactStatevector:
         qc.rxx(0.7, 0, 2)
         out_state = np.zeros([8], dtype=complex)
         tensornetwork_from_circuit(qc, available_backend_fixture, out_state=out_state)
-        # TODO: re-enable this assertion (and the Statevector import above)
-        # once the Quimb backend writes out_state in Qiskit's qubit order
-        # (see #184).  The assertion currently fails for the Quimb backends.
-        # assert abs(np.vdot(Statevector(qc).data, out_state)) == pytest.approx(1)
+        assert abs(np.vdot(Statevector(qc).data, out_state)) == pytest.approx(1)
