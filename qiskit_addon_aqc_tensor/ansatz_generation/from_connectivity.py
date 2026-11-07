@@ -170,9 +170,7 @@ def generate_ansatz_from_circuit(
 ) -> tuple[QuantumCircuit, list[float]]:
     r"""Generate an ansatz from the two-qubit connectivity structure of a circuit.
 
-    See the `explanatatory material
-    <https://qiskit.github.io/qiskit-addon-aqc-tensor/explanation/index.html#ansatz-generation-motivation>`__
-    for motivation.
+    See the :ref:`explanatory material <ansatz generation motivation>` for motivation.
 
     Args:
         qc: A circuit, which is assumed to be unitary.  Barriers are ignored.
